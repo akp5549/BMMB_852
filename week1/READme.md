@@ -31,3 +31,9 @@
 # samtools --version
 #output = samtools 1.21
  Using htslib 1.21 #
+
+
+ #make a new file and edit it in directory#
+# cd week1
+# touch exfile.txt
+# nano exfile.txt
