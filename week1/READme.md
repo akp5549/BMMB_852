@@ -37,3 +37,6 @@
 # cd week1
 # touch exfile.txt
 # nano exfile.txt
+
+#output = edited txt. file with message in "C:\Users\Alexis\BMMB_852\BMMB_852\week1\exfile.txt" #
+<img width="1508" height="602" alt="image" src="https://github.com/user-attachments/assets/53484a37-1fd6-4523-9d87-a2dbf029acfd" />
