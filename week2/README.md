@@ -164,16 +164,16 @@ cat melano.gff3 | cut -f 3 | sort-uniq-count-rank | head
 #### Source: https://useast.ensembl.org/info/genome/genebuild/biotypes.html?utm_source=chatgpt.com
 
 ## 6. What are the top-ten most annotated feature types (column 3) across the genome?
-###  445085 exon
-### 425193 CDS
-### 194158 biological_region
-### 36899 mRNA
-### 31205 five_prime_UTR
-### 20976 three_prime_UTR
-### 18615 gene
-### 2872 ncRNA_gene
-### 1220 snRNA
-### 1185 lnc_RNA
+### 1. exon
+### 2. CDS
+### 3. biological_region
+### 4. mRNA
+### 5. five_prime_UTR
+### 6. three_prime_UTR
+### 7. gene
+### 8. ncRNA_gene
+### 9. snRNA
+### 10. lnc_RNA
 
 
 ## 7. Having analyzed this GFF file, does it seem like a complete and well-annotated organism?
@@ -182,4 +182,6 @@ cat melano.gff3 | cut -f 3 | sort-uniq-count-rank | head
 #### Diveristy of sequencies and transcripts included: CDS, C gene segment, J gene segment, V gene segment, exons, five_prime_UTR, three_prime_UTR, mRNA, genes, exons etc. 
 
 ## 8. Share any other insights you might note.
-###
+### This file has 1 X chromosome, missing the other sex chromosome, and does not contain any mitochondrial DNA.  
+
+
