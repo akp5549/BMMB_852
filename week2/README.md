@@ -155,7 +155,7 @@ cat melano.gff3 | cut -f 3 | sort-uniq-count-rank | head
 
 
 ## 4. How many genes are listed for this organism?
-### 18615
+### 18615 genes
 
 
 ## 5. Is there a feature type that you may have not heard about before? What is the feature and how is it defined? (If there is no such feature, pick a common feature.)
