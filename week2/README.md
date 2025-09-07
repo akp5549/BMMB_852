@@ -1,8 +1,24 @@
 # put readme info here
 
-Code:
+## Code:
+### Create new directory for week2
+```
+pwd
+ls
+cd BMMB_852/BMMB_852/
+mkdir week2
+cd week2
+```
 
+### Download another file from Ensembl FTP server
+``` 
+wget https://ftp.ensembl.org/pub/current_gff3/ailuropoda_melanoleuca/Ailuropoda_melanoleuca.ASM200744v2.115.chr.gff3.gz
+```
 
+### Unzip file
+```
+gunzip
+```
 
 ## 1. Tell us a bit about the organism.
 
