@@ -65,3 +65,6 @@ grep -Ew "gene|transcript" salm-enter.gff3 > gene_transcript.gff
 
 
 <img width="1918" height="1016" alt="image" src="https://github.com/user-attachments/assets/72b4aee8-4a13-4d65-96ce-aafbccd10212" />
+
+### On the left, the start codon is green marked M. On the right, the stop codon is red and marked *
+<img width="1923" height="857" alt="image" src="https://github.com/user-attachments/assets/11af24d5-2f58-443f-9671-1153bcb93ebe" />
