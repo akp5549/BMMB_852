@@ -25,6 +25,7 @@ unzip -n ncbi_dataset.zip
 cd ncbi_dataset
 cd data
 ls
+cd GCF_000848505.1/
 ```
 
 # Count each feature type in the GFF file
