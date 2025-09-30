@@ -1,4 +1,4 @@
-### 1. Identify BioPorject and SRR#
+### 1. Identify BioProject and SRR#
 #### - SRA BioProject = PRJNA257197
 #### - SRR number = SRR1735120
 #### - URL = https://www.ncbi.nlm.nih.gov/sra/SRX824283[accn]
