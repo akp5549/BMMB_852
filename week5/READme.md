@@ -78,7 +78,8 @@ chmod +x week5.sh
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/a9eebd9a-bdaa-45b6-83bd-a4812224dbc4" />
 
-#### Based on this, we can conclude 
+#### Based on this, we can conclude that the quality is good for this dataset. Although the GC content is a litte off and on the higher end, the Per sequence quality scores and Per base sequence quality are satisfactory. 
+
 
 
 ### 5. Comparing quality report of another dataset of same genome, but using a different platfortm 
