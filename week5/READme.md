@@ -6,11 +6,11 @@
 
 ### 2. 10x Coverage calculation
 #### - The size of the genome is about ~19kb
-#### Target bases: 19,000 × 10 = 190,000 bases 
-#### Illumina 2×100 bp ≈ ~200 bases/spot → 190,000/200 ≈ 950 spots ; to be safe I rounded up to 1000 spots
+#### - Target bases: 19,000 × 10 = 190,000 bases 
+#### - Illumina 2×100 bp ≈ ~200 bases/spot → 190,000/200 ≈ 950 spots ; to be safe I rounded up to 1000 spots
 
 ### 3. Expand on last weeks code and run a bash shell script & generate stats on read
-#### Bash shell script =
+#### - Bash shell script =
 ```
 #!/bin/bash
 
@@ -86,7 +86,8 @@ chmod +x week5.sh
 #### - SRX7443463: Ebola virus, OXFORD_NANOPORE
 #### - SRR = SRR10769763
 #### - https://www.ncbi.nlm.nih.gov/sra/SRX7443463[accn] 
-#### Repeat bash script with new SRR # = 
+
+#### - Repeat bash script with new SRR # = 
 ```
 #!/bin/bash
 
