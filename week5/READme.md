@@ -138,4 +138,4 @@ echo "Done. FastQC reports saved in: $REPORTS_DIR"
 
 
 
-#### Comparing them, aside from the fact that we know paired-end data is more robust than single-end data, we can clearly see the quality of FASTQ files is better in the Illumina sequence. 
+#### Comparing them, aside from the fact that we know paired-end data is more robust than single-end data, we can clearly see the quality of FASTQ files is better in the Illumina sequence. For example, the Phred score is almost 2x as high for the Illumina platform dataset. 
