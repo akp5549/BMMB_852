@@ -1,11 +1,13 @@
-## 1. Identify BioPorject and SRR#
-### - SRA BioProject = PRJNA257197
-### - SRR number = SRR1735120
-### - URL = https://www.ncbi.nlm.nih.gov/sra/SRX824283[accn]
+### 1. Identify BioPorject and SRR#
+#### - SRA BioProject = PRJNA257197
+#### - SRR number = SRR1735120
+#### - URL = https://www.ncbi.nlm.nih.gov/sra/SRX824283[accn]
 
 
 ### 2. 10x Coverage calculation
-
+#### - The size of the genome is about ~19kb
+#### Target bases: 19,000 × 10 = 190,000 bases 
+#### Illumina 2×100 bp ≈ ~200 bases/spot → 190,000/200 ≈ 950 spots ; to be safe I rounded up to 1000 spots
 
 ### 3. Expand on last weeks code and run a bash shell script & generate stats on read
 #### Bash shell script =
