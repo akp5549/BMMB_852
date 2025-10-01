@@ -16,7 +16,7 @@
 
 # week5.sh - Download ~10x coverage of Ebola virus genome and run FastQC
 
-# -------------------- Configuration --------------------
+# Configuration 
 
 SRR="SRR1735120"
 SPOTS=1000                      # Approximate number of spots for 10x coverage
@@ -27,22 +27,22 @@ REPORTS_DIR="fastqc_reports"
 R1="${READS_DIR}/${SRR}_1.fastq"
 R2="${READS_DIR}/${SRR}_2.fastq"
 
-# -------------------- Create Directories --------------------
+# =Create Directories
 
 mkdir -p "$READS_DIR"
 mkdir -p "$REPORTS_DIR"
 
-# -------------------- Download Subset of Reads --------------------
+# Download Subset of Reads 
 
 echo "Downloading $SPOTS spots (~10x genome coverage for Ebola virus)..."
 fastq-dump -X "$SPOTS" --split-files -O "$READS_DIR" "$SRR"
 
-# -------------------- Run FastQC --------------------
+# Run FastQC 
 
 echo "Running FastQC on downloaded reads..."
 fastqc -o "$REPORTS_DIR" "$R1" "$R2"
 
-# -------------------- Basic Read Statistics --------------------
+#  Basic Read Statistics 
 
 echo "Generating basic statistics..."
 
@@ -51,14 +51,6 @@ awk '(NR%4==2){bases+=length($1); reads++} END{print FILENAME, "- Reads:", reads
 
 echo "Done. FastQC reports saved in: $REPORTS_DIR"
 
-```
-
-
-
-#### Run bash script =
-```
-chmod +x week5.sh
-./week5.sh
 ```
 
 
