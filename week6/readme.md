@@ -97,7 +97,7 @@ alignment_summary: ${BAM}
 
 
 ## 2. explain the use of the Makefile in your project
-
+### - We use a Makefile for this project 
 
 
 ## 3. Visualize the resulting BAM files for both simulated reads and reads downloaded from SRA.
