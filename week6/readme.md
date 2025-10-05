@@ -1,7 +1,6 @@
 
 
-## 1. Create a Makefile
-### Create a Makefile that addresses the following
+## 1. Create a Makefile that addresses the following:
 #### - Obtaining the genome and downloading sequencing reads from SRA
 #### - Include the following targets: Index the genome and generate a sorted and indexed BAM file by aligning reads to the genome
 ```
