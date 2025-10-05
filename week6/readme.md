@@ -97,3 +97,14 @@ alignment_summary: ${BAM}
 ```
 
 ## 2. explain the use of the Makefile in your project
+
+
+## 3. Visualize the resulting BAM files for both simulated reads and reads downloaded from SRA.
+
+
+## 4. Generate alignment statistics for the BAM file.
+### A. What percentage of reads aligned to the genome?
+### B. What was the expected average coverage?
+### C. What is the observed average coverage?
+### D. How much does the coverage vary across the genome? (Provide a visual estimate.)
+
