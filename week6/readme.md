@@ -99,11 +99,17 @@ alignment_summary: ${BAM}
 
 
 ## 3. Visualize the resulting BAM files for both simulated reads and reads downloaded from SRA.
+### <img width="1918" height="198" alt="image" src="https://github.com/user-attachments/assets/1b321876-d516-41e2-ad6a-c80ea443a0bc" />
+
 
 
 ## 4. Generate alignment statistics for the BAM file.
 ### A. What percentage of reads aligned to the genome?
+### - ~ 0%
 ### B. What was the expected average coverage?
+### - ~ 5.3×
 ### C. What is the observed average coverage?
+### - observed average coverage = 0×
 ### D. How much does the coverage vary across the genome? (Provide a visual estimate.)
+### - Very high / uneven: Coverage is 0 across the entire genome
 
