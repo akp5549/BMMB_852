@@ -1,6 +1,9 @@
 
 
-## Create a Makefile
+## 1. Create a Makefile
+### Create a Makefile that addresses the following
+#### - Obtaining the genome and downloading sequencing reads from SRA
+#### - Include the following targets: Index the genome and generate a sorted and indexed BAM file by aligning reads to the genome
 ```
 # Makefile for Ebola genome alignment project
 
@@ -92,3 +95,5 @@ alignment_summary: ${BAM}
 	@echo "Expected coverage = total bases / genome size = "$$((${SPOTS} * 200 / 19000))"x"
 
 ```
+
+## 2. explain the use of the Makefile in your project
