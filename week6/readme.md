@@ -95,11 +95,14 @@ alignment_summary: ${BAM}
 
 ```
 
+
 ## 2. explain the use of the Makefile in your project
 
 
+
 ## 3. Visualize the resulting BAM files for both simulated reads and reads downloaded from SRA.
-### <img width="1918" height="198" alt="image" src="https://github.com/user-attachments/assets/1b321876-d516-41e2-ad6a-c80ea443a0bc" />
+
+<img width="1918" height="198" alt="image" src="https://github.com/user-attachments/assets/1b321876-d516-41e2-ad6a-c80ea443a0bc" />
 
 
 
