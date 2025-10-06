@@ -3,6 +3,13 @@
 ## 1. Create a Makefile that addresses the following:
 #### - Obtaining the genome and downloading sequencing reads from SRA
 #### - Include the following targets: Index the genome and generate a sorted and indexed BAM file by aligning reads to the genome
+
+```
+cd BMMB_852/BMMB_852/week6
+nano Makefile6
+```
+
+
 ```
 # Makefile for Ebola genome alignment project
 
