@@ -104,7 +104,7 @@ alignment_summary: ${BAM}
 
 
 ## 2. Explain the use of the Makefile in your project
-### - We use a Makefile for this project to better organize our genome and sequencing data workflow. It allows us to define specific targets, track file dependencies, and pass parameters to have the same pipeline run on different datasets. It also shows commands without actually executing them, so it is helpful with debugging. Overall, it is more reproducible, efficient, and easier to maintain.
+#### - We use a Makefile for this project to better organize our genome and sequencing data workflow. It allows us to define specific targets, track file dependencies, and pass parameters to have the same pipeline run on different datasets. It also shows commands without actually executing them, so it is helpful with debugging. Overall, it is more reproducible, efficient, and easier to maintain.
 
 
 ## 3. Visualize the resulting BAM files for both simulated reads and reads downloaded from SRA.
@@ -115,14 +115,14 @@ samtools tview bam/SRR35257019.bam refs/ebola-1976.fa
 
 
 ## 4. Generate alignment statistics for the BAM file.
-### A. What percentage of reads aligned to the genome?
-### - ~ 99.7%
-### B. What was the expected average coverage?
-### - ~ 15×
-### C. What is the observed average coverage?
-### - observed average coverage = ~ 15×
-### D. How much does the coverage vary across the genome? (Provide a visual estimate.)
-### - Coverage is fairly uniform, high, and complete
+#### A. What percentage of reads aligned to the genome?
+#### - ~ 99.7%
+#### B. What was the expected average coverage?
+#### - ~ 15×
+#### C. What is the observed average coverage?
+#### - observed average coverage = ~ 15×
+#### D. How much does the coverage vary across the genome? (Provide a visual estimate.)
+#### - Coverage is fairly uniform, high, and complete
 <img width="1897" height="178" alt="image" src="https://github.com/user-attachments/assets/8273c36f-9f4c-4d9b-8670-8465595b0047" />
 
 
