@@ -96,8 +96,8 @@ alignment_summary: ${BAM}
 ```
 
 
-## 2. explain the use of the Makefile in your project
-### - We use a Makefile for this project 
+## 2. Explain the use of the Makefile in your project
+### - We use a Makefile for this project to better organize our genome and sequencing data workflow. It allows us to define specific targets, track file dependencies, and pass parameters to have the same pipeline run on different datasets. It also shows commands without actually executing them, so it is helpful with debugging. Overall, it is more reproducible, efficient, and easier to maintain.
 
 
 ## 3. Visualize the resulting BAM files for both simulated reads and reads downloaded from SRA.
