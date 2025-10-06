@@ -9,7 +9,7 @@
 # Variables
 ACC=AF086833
 NAME=ebola-1976
-SRR=SRR1735120
+SRR=SRR35257019
 SPOTS=1000
 
 REF=refs/${NAME}.fa
@@ -101,18 +101,21 @@ alignment_summary: ${BAM}
 
 
 ## 3. Visualize the resulting BAM files for both simulated reads and reads downloaded from SRA.
-
-<img width="1918" height="198" alt="image" src="https://github.com/user-attachments/assets/1b321876-d516-41e2-ad6a-c80ea443a0bc" />
-
+```
+samtools tview bam/SRR35257019.bam refs/ebola-1976.fa
+```
+<img width="1902" height="207" alt="image" src="https://github.com/user-attachments/assets/10da2e76-847e-443a-8899-f0e0511a01dd" />
 
 
 ## 4. Generate alignment statistics for the BAM file.
 ### A. What percentage of reads aligned to the genome?
-### - ~ 0%
+### - ~ 99.7%
 ### B. What was the expected average coverage?
-### - ~ 5.3×
+### - ~ 15×
 ### C. What is the observed average coverage?
-### - observed average coverage = 0×
+### - observed average coverage = ~ 15×
 ### D. How much does the coverage vary across the genome? (Provide a visual estimate.)
-### - Very high / uneven: Coverage is 0 across the entire genome
+### - Coverage is fairly uniform, high, and complete
+<img width="1897" height="178" alt="image" src="https://github.com/user-attachments/assets/8273c36f-9f4c-4d9b-8670-8465595b0047" />
+
 
