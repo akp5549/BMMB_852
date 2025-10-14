@@ -44,10 +44,6 @@ fastq:
 index:
 	bwa index ${REF}
 
-align:
-	mkdir -p $(dir ${BAM})
-	bwa mem -t 4 ${REF} ${R1} ${R2} | samtools sort -o ${BAM}
-	samtools index ${BAM}
 
 stats:
 	samtools flagstat ${BAM}
@@ -81,7 +77,7 @@ alignment_summary: ${BAM}
 align: index fastq
 	mkdir -p $(BAM_DIR)
 	# align, sort, write BAM
-	bwa mem -t $(THREADS) $(REF) $(R1) $(R2) | samtools sort -@ $(THREADS) -o $(BAM)
+	bwa mem -t $(THREADS) $(REF) $(R1) $(R2) | samtools sort -@ $(THREADS) -T tmp_prefix -o $(BAM)
 	# index BAM
 	samtools index $(BAM)
 
