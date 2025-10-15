@@ -53,7 +53,7 @@ fastq:
 index:
 	bwa index ${REF}
 
-# ----------------- Align Reads -> BAM + Index -----------------
+# ----------------- align -> BAM + index -----------------
 align: index fastq
 	mkdir -p $(BAM_DIR)
 	# align, sort, write BAM
