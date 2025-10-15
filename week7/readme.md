@@ -1,3 +1,11 @@
+## Using the same MakeFile as last week I added the following changes:
+
+
+## The 2 SRRs I compared:
+```
+make all SRR=SRR35257019 NAME=ebola-1976 ACC=AF086833 
+make all SRR=SRR1972739 NAME=ebola-1976 ACC=AF086833 
+```
 
 # 1. Briefly describe the differences between the alignment in both files.
 
