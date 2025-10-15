@@ -44,3 +44,8 @@ done
 ```
 ### - Alignments covering VP24: 
 ### SRR35257019 → 26 and SRR1972739 → 47
+
+
+## IGV visualization:
+<img width="1918" height="1018" alt="image" src="https://github.com/user-attachments/assets/503cb3c1-02a1-48ce-877a-e3816edbfbdf" />
+
