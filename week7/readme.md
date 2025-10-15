@@ -8,9 +8,9 @@ make all SRR=SRR1972739 NAME=ebola-1976 ACC=AF086833
 ```
 
 # 1. Briefly describe the differences between the alignment in both files.
-### - SRR35257019 had a very high mapping rate (~99.65% primary mapped) with nearly all reads properly paired (1986/2000).
+### - SRR35257019 had a very high mapping rate (~99.65% primary mapped) and nearly all reads were properly paired (1986/2000).
 ### - SRR1972739 had a lower mapping rate (~73.80% primary mapped) and fewer properly paired reads (1466/2000).
-### - This suggests that SRR35257019 had better alignment quality or less divergence from the reference genome compared to SRR1972739.
+### - This means  SRR35257019 aligns better to the reference genome, suggesting higher data quality or less divergence
 
 # 2.Briefly compare the statistics for the two BAM files.
 | Statistic             | SRR35257019 | SRR1972739 |
@@ -40,5 +40,7 @@ for S in SRR35257019 SRR1972739; do
   REGION="AF086833.2:5678-6433"   # VP24 coordinates
   forward=$(samtools view -c -F 16 "$BAM" "$REGION")
   echo -e "$S\tForward_reads_over_VP24\t$forward"
+done
 ```
-### - Alignments covering VP24: SRR35257019 → 26 and SRR1972739 → 47
+### - Alignments covering VP24: 
+### SRR35257019 → 26 and SRR1972739 → 47
