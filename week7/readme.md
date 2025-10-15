@@ -1,7 +1,7 @@
-## Using the same MakeFile as last week, I added changes and updated the code
+# Using the same MakeFile as last week, I added changes and updated the code
 
 
-## The 2 SRRs I compared:
+# The 2 SRRs I compared:
 ```
 make all SRR=SRR35257019 NAME=ebola-1976 ACC=AF086833 
 make all SRR=SRR1972739 NAME=ebola-1976 ACC=AF086833 
@@ -28,8 +28,17 @@ make all SRR=SRR1972739 NAME=ebola-1976 ACC=AF086833
 ### - SRR35257019: 1993 primary alignments
 ### - SRR1972739: 1476 primary alignments
 
-# 4. What coordinate has the largest observed coverage? (hint: samtools depth)
+# 4. What coordinate has the largest observed coverage?
 ### - SRR35257019: position 6083 with 81 reads
 ### - SRR1972739: position 17435 with 42 reads
 
 # 5. Select a gene of interest. How many alignments on the forward strand cover the gene?
+### - Gene chosen: VP24 (positions 5678–6433)
+```
+for S in SRR35257019 SRR1972739; do
+  BAM=bam/$S.bam
+  REGION="AF086833.2:5678-6433"   # VP24 coordinates
+  forward=$(samtools view -c -F 16 "$BAM" "$REGION")
+  echo -e "$S\tForward_reads_over_VP24\t$forward"
+```
+### - Alignments covering VP24: SRR35257019 → 26 and SRR1972739 → 47
