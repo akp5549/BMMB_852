@@ -18,10 +18,10 @@ SRR1734998, SL2014_Run10,ebola,SierraLeone
 ## 3. Create Makefile that can produce multiple BAM alignment files/ use one from last week
 ### Used last week's Makefile
 
-## 4. Using GNU parallel run the Makefile on all (or at least 10) samples
+## 4. Using GNU parallel run the Makefile on 10 samples
 ```
 cat design.csv | \
-    parallel --dry-run --colsep , --header : --eta --lb -j 10 \
+    parallel --colsep , --header : --eta --lb -j 10 \
              make \
              SRR={Run} \
              SAMPLE={Sample} \
