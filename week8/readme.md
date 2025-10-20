@@ -15,10 +15,10 @@ SRR1972802, SL2014_Run9,ebola,SierraLeone
 SRR1734998, SL2014_Run10,ebola,SierraLeone
 ```
 
-## 3. Create Makefile that can produce multiple BAM alignment files/ use one from last week
+## 3. Create a Makefile that can produce multiple BAM alignment files/ use one from last week
 ### Used last week's Makefile
 
-## 4. Using GNU parallel run the Makefile on 10 samples
+## 4. Using GNU parallel, run the Makefile on 10 samples
 ```
 cat design.csv | \
     parallel --colsep , --header : --eta --lb -j 10 \
@@ -30,3 +30,4 @@ cat design.csv | \
              all
 ```
 
+## 5. Results and outputs include: genome name, FASTQ read data, FASTQC reports for each read, Alignments and coverage files in BAM and BW formats, statistics alignment reporst for each BAM file
