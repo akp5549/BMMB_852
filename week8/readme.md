@@ -6,7 +6,7 @@
 
 ```
 cat design.csv | \
-    parallel --dry-run --colsep , --header : --eta --lb -j 4 \
+    parallel --dry-run --colsep , --header : --eta --lb -j 10 \
              make \
              SRR={Run} \
              SAMPLE={Sample} \
