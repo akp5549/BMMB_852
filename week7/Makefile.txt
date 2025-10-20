@@ -31,7 +31,7 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig
 
 # ----------------- Default Workflow -----------------
-all: refs fastq index align stats
+all: refs fastq fastqc index align stats
 
 # ----------------- Usage Message -----------------
 usage:
@@ -56,6 +56,11 @@ fastq:
 	else \
 		seqkit stats ${R1}; \
 	fi
+
+fastqc:
+	mkdir -p fastqc_reports
+	fastqc reads/${SRR}_*.fastq -o fastqc_reports
+
 
 # ----------------- Index Reference Genome -----------------
 index:
