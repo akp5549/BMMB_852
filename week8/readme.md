@@ -1,6 +1,19 @@
 # Week 8: Automate a large-scale analysis 
 
 ## 1. Identify sample names that connect the SRR numbers to the samples
+```
+Run,Sample,Group,Condition
+SRR35257019,SL2014_Run1,ebola,SierraLeone
+SRR1972739,SL2014_Run2,ebola,SierraLeone
+SRR1972974,SL2014_Run3,ebola,SierraLeone
+SRR1972966, SL2014_Run4,ebola,SierraLeone
+SRR1972813, SL2014_Run5,ebola,SierraLeone
+SRR1972804, SL2014_Run6,ebola,SierraLeone
+SRR1972812, SL2014_Run7,ebola,SierraLeone
+SRR1972805, SL2014_Run8,ebola,SierraLeone
+SRR1972802, SL2014_Run9,ebola,SierraLeone
+SRR1734998, SL2014_Run10,ebola,SierraLeone
+```
 
 ## 2. Create a design.csv file that connects the SRR numbers to the sample names
 
