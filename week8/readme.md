@@ -30,4 +30,5 @@ cat design.csv | \
              all
 ```
 
-## 5. Results and outputs include: genome name, FASTQ read data, FASTQC reports for each read, Alignments and coverage files in BAM and BW formats, statistics alignment reports for each BAM file
+## 5. Results and outputs include: 
+### genome name, FASTQ read data, FASTQC reports for each read, Alignments and coverage files in BAM and BW formats, statistics alignment reports for each BAM file
