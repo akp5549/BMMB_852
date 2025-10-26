@@ -21,7 +21,7 @@ SRR1734998, SL2014_Run10,ebola,SierraLeone
 ## 3. Using GNU parallel, run the Makefile on 10 samples
 ```
 cat design.csv | \
-    parallel --colsep , --header : --eta --lb -j 2 \
+    parallel --colsep , --header : --eta --lb -j 10 \
              make \
              SRR={Run} \
              SAMPLE={Sample} \
