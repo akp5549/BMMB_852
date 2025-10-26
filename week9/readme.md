@@ -1,4 +1,4 @@
-# Week 8: Automate a large-scale analysis 
+# Week 9: Revisions for Week 8- Automate a large-scale analysis 
 
 ## 1. Identify sample names that connect the SRR numbers to the samples. Create a design.csv file that connects the SRR numbers to the sample names
 ```
