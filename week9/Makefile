@@ -90,8 +90,8 @@ stats: ${BAM}
 # ----------------- Alignment Summary -----------------
 alignment_summary: ${BAM}
 	@echo "Generating alignment summary for ${BAM}:"
-	@total_reads=$$(samtools view -c ${BAM}); \
-	aligned_reads=$$(samtools view -c ${BAM}); \
+	@total_reads=$$(samtools view -c -F 0x904 ${BAM}); \
+	aligned_reads=$$(samtools view -c -F 0x4 ${BAM}); \
 	perc=$$(awk -v a=$$aligned_reads -v t=$$total_reads 'BEGIN{ if (t>0) printf("%.2f", (a/t)*100) else print "NA" }'); \
 	echo "Total primary alignments (excl unmapped/secondary/supplementary): $$total_reads"; \
 	echo "Aligned reads (not flagged as unmapped): $$aligned_reads"; \
