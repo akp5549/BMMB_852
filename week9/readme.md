@@ -3,7 +3,7 @@
 ## 1. Identify sample names that connect the SRR numbers to the samples. Create a design.csv file that connects the SRR numbers to the sample names
 ```
 Run,Sample,Group,Condition
-SL2014_Run1,SRR35257019,ebola,SierraLeone
+SL2014_Run1,SRR1972950,ebola,SierraLeone
 SL2014_Run2,SRR1972739,ebola,SierraLeone
 SL2014_Run3,SRR1972974,ebola,SierraLeone
 SL2014_Run4,SRR1972966,ebola,SierraLeone
