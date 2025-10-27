@@ -3,7 +3,7 @@
 # ----------------- Variable Definitions -----------------
 ACC ?= AF086833
 NAME ?= ebola-1976
-SRR ?= SRR35257019
+SRR ?= SRR1972950
 SPOTS ?= 1000
 THREADS ?= 4
 
