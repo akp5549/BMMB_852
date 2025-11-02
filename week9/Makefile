@@ -31,7 +31,7 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig
 
 # ----------------- Default Workflow -----------------
-all: refs fastq fastqc index align stats
+all: refs fastq fastqc align stats
 
 # ----------------- Usage Message -----------------
 usage:
@@ -66,7 +66,7 @@ index:
 	bwa index ${REF}
 
 # ----------------- align -> BAM + index -----------------
-align: index fastq
+align: fastq
 	mkdir -p ${BAM_DIR}
 	# align, sort, write BAM (handles single-end or paired-end)
 ifneq ("$(wildcard ${R2})","")
