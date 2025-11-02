@@ -8,11 +8,11 @@ SPOTS ?= 1000
 THREADS ?= 4
 
 BAM_DIR := bam
-BG := coverage/depth.bedgraph
-BIGWIG := coverage/depth.bw
+BG := coverage/${SRR}.bedgraph
+BIGWIG := coverage/${SRR}.bw
+COVERAGE := coverage/${SRR}.txt
 CHROMSIZES := refs/${NAME}.chrom.sizes
 FAI := ${REF}.fai
-COVERAGE := coverage/depth.txt
 
 REF := refs/${NAME}.fa
 R1 := reads/${SRR}_1.fastq
