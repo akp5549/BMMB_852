@@ -30,6 +30,7 @@ cat design.csv | \
     parallel --colsep , --header : --eta --lb -j 2 \
              make \
              SRR={Run} \
+NAME=ebola-1976
              SAMPLE={Sample} \
              GROUP={Group} \
              CONDITION={Condition} \
