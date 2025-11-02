@@ -62,11 +62,12 @@ fastqc:
 	fastqc reads/${SRR}_*.fastq -o fastqc_reports
 
 # ----------------- Index Reference Genome -----------------
-index:
+${REF}.bwt: ${REF}
 	bwa index ${REF}
+index: ${REF}.bwt
 
 # ----------------- align -> BAM + index -----------------
-align: fastq
+align: fastq ${REF}.bwt
 	mkdir -p ${BAM_DIR}
 	# align, sort, write BAM (handles single-end or paired-end)
 ifneq ("$(wildcard ${R2})","")
