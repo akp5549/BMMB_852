@@ -19,7 +19,12 @@ SRR1734998,SL2014_Run10,ebola,SierraLeone
 ## 2. Create a Makefile that can produce multiple BAM alignment files/ use one from last week
 ### - Used last week's Makefile
 
-## 3. Using GNU parallel, run the Makefile on 10 samples
+##3. Download reference genomes:
+```
+make NAME=ebola-1976 refs
+```
+
+## 4. Using GNU parallel, run the Makefile on 10 samples
 ```
 cat design.csv | \
     parallel --colsep , --header : --eta --lb -j 2 \
@@ -31,7 +36,7 @@ cat design.csv | \
              all
 ```
 
-## 4. Results and outputs include: 
+## 5. Results and outputs include: 
 ### - genome name, FASTQ read data, FASTQC reports for each read, Alignments and coverage files in BAM and BW formats, statistics alignment reports for each BAM file
 
 <img width="1122" height="533" alt="image" src="https://github.com/user-attachments/assets/316a82f3-e5b0-4d81-8113-2de0bc735c1f" />
