@@ -19,7 +19,7 @@ SRR1734998,SL2014_Run10,ebola,SierraLeone
 ## 2. Create a Makefile that can produce multiple BAM alignment files/ use one from last week
 ### - Used last week's Makefile
 
-##3. Download reference genomes:
+## 3. Download reference genomes:
 ```
 make NAME=ebola-1976 refs
 ```
