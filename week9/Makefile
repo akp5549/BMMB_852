@@ -31,7 +31,7 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig
 
 # ----------------- Default Workflow -----------------
-all: refs fastq fastqc align stats
+all: fastq fastqc align stats
 
 # ----------------- Usage Message -----------------
 usage:
