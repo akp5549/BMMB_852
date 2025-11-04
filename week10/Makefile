@@ -28,7 +28,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig variants
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig variants igv 
 
 # ----------------- Default Workflow -----------------
 all: fastq fastqc align stats variants
@@ -155,3 +155,12 @@ variants:
 	# index VCF
 	bcftools index VCF/${SRR}.vcf.gz
 
+#-------- IGV -----------------
+igv:
+	echo "new" | nc localhost 60151
+	echo "genome refs/ebola-1976.fa" | nc localhost 60151
+	echo "load VCF/all_variants.vcf.gz" | nc localhost 60151
+	echo "load bam/*.bam" | nc localhost 60151
+	echo "load refs/ebola-1976.gff" | nc localhost 60151
+	echo "load coverage/*.bw" | nc localhost 60151
+	echo "expand" | nc localhost 60151
