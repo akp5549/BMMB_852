@@ -62,6 +62,9 @@ fastqc:
 	fastqc reads/${SRR}_*.fastq -o fastqc_reports
 
 # ----------------- Index Reference Genome -----------------
+${REF}:
+	make refs
+
 ${REF}.bwt: ${REF}
 	bwa index ${REF}
 index: ${REF}.bwt
@@ -140,15 +143,15 @@ clean:
 
 # ----------------- Variant Calling -----------------
 variants:
-# make directory for vcf files
+	# make directory for vcf files
 	mkdir -p VCF
 
-# Variant calling process
+	# Variant calling process
 	bcftools mpileup -Ou -f ${REF} ${BAM} | \
 	bcftools call -mv -Ou | \
 	bcftools norm -f ${REF} -d all -Ou | \
 	bcftools sort -Oz -o VCF/${SRR}.vcf.gz
 
-# index VCF
+	# index VCF
 	bcftools index ${VCF}
 
