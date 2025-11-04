@@ -138,13 +138,17 @@ clean:
 	rm -rf refs/* reads/* ${BAM_DIR}/* ${COVERAGE} coverage_plot.png bigwig coverage depth* $(BG)*
 
 
-#variant calling
+# ----------------- Variant Calling -----------------
 variants:
-	#make directory for vcf files
-	mkdir VCF
+# make directory for vcf files
+	mkdir -p VCF
 
-# Variant calling process.
-bcftools mpileup ${F1} -O u -f ${REF} ${BAM} | \
-bcftools call ${F2} -mv -O u | \
-bcftools norm -f ${REF} -d all -O u | \
-bcftools sort -O z > ${VCF}
+# Variant calling process
+	bcftools mpileup -Ou -f ${REF} ${BAM} | \
+	bcftools call -mv -Ou | \
+	bcftools norm -f ${REF} -d all -Ou | \
+	bcftools sort -Oz -o VCF/${SRR}.vcf.gz
+
+# index VCF
+	bcftools index ${VCF}
+
