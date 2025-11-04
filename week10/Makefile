@@ -28,10 +28,10 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig variants
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats
+all: fastq fastqc align stats variants
 
 # ----------------- Usage Message -----------------
 usage:
@@ -153,5 +153,5 @@ variants:
 	bcftools sort -Oz -o VCF/${SRR}.vcf.gz
 
 	# index VCF
-	bcftools index ${VCF}
+	bcftools index VCF/${SRR}.vcf.gz
 
