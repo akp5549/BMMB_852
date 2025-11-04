@@ -136,3 +136,15 @@ coverage: ${COVERAGE}
 # ----------------- Clean Workspace -----------------
 clean:
 	rm -rf refs/* reads/* ${BAM_DIR}/* ${COVERAGE} coverage_plot.png bigwig coverage depth* $(BG)*
+
+
+#variant calling
+variants:
+	#make directory for vcf files
+	mkdir VCF
+
+# Variant calling process.
+bcftools mpileup ${F1} -O u -f ${REF} ${BAM} | \
+bcftools call ${F2} -mv -O u | \
+bcftools norm -f ${REF} -d all -O u | \
+bcftools sort -O z > ${VCF}
