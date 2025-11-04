@@ -51,3 +51,5 @@ bcftools merge -O z VCF/*.vcf.gz -o all_variants.vcf.gz
 ```
 
 ## 9. IGV 
+<img width="1918" height="512" alt="image" src="https://github.com/user-attachments/assets/2d7d5044-4f2a-48bb-9572-3d14dd4c413b" />
+
