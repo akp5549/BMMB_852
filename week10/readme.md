@@ -47,5 +47,5 @@ make all SRR=SRR1972957 NAME=ebola-1976 ACC=AF086833
 
 ## 7. Merge VCF files
 ```
-bcftools merge -O z *.vcf.gz > all_variants.vcf.gz
+bcftools merge -O z VCF/*.vcf.gz -o all_variants.vcf.gz
 ```
