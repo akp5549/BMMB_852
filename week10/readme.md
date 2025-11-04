@@ -32,7 +32,12 @@ cat design.csv | \
 
 ```
 
-## 5. Results and outputs include: 
+## 5. If you wanted to run a single sample:
+```
+make all SRR=SRR1972957 NAME=ebola-1976 ACC=AF086833
+```
+
+## 6. Results and outputs include: 
 ### - genome name, FASTQ read data, FASTQC reports for each read, Alignments and coverage files in BAM and BW formats, statistics alignment reports for each BAM file
 
 <img width="1122" height="533" alt="image" src="https://github.com/user-attachments/assets/316a82f3-e5b0-4d81-8113-2de0bc735c1f" />
@@ -40,12 +45,9 @@ cat design.csv | \
 <img width="1297" height="850" alt="image" src="https://github.com/user-attachments/assets/a90a857b-f45f-467e-bd28-737344bd761a" />
 
 
-## 6. If you wanted to run a single sample:
-```
-make all SRR=SRR1972957 NAME=ebola-1976 ACC=AF086833
-```
-
-## 7. Merge VCF files
+## 8. Merge VCF files
 ```
 bcftools merge -O z VCF/*.vcf.gz -o all_variants.vcf.gz
 ```
+
+## 9. IGV 
