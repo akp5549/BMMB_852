@@ -8,11 +8,11 @@ SRR1972739,SL2014_Run2,ebola,SierraLeone
 SRR1972967,SL2014_Run3,ebola,SierraLeone
 SRR1972966,SL2014_Run4,ebola,SierraLeone
 SRR1972968,SL2014_Run5,ebola,SierraLeone
-SRR1972964,SL2014_Run6,ebola,SierraLeone
+SRR1972965,SL2014_Run6,ebola,SierraLeone
 SRR1972812,SL2014_Run7,ebola,SierraLeone
-SRR1972958,SL2014_Run8,ebola,SierraLeone
-SRR1972802,SL2014_Run9,ebola,SierraLeone
-SRR1734998,SL2014_Run10,ebola,SierraLeone
+SRR1972973,SL2014_Run8,ebola,SierraLeone
+SRR1972810,SL2014_Run9,ebola,SierraLeone
+SRR1972955,SL2014_Run10,ebola,SierraLeone
 ```
 
 ## 2. Create a Makefile that can produce multiple BAM alignment files/ use one from last week
