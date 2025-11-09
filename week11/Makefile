@@ -155,3 +155,25 @@ variants:
 	# index VCF
 	bcftools index VCF/${SRR}.vcf.gz
 
+# ----------------- Build custom SnpEff database -----------------
+LABEL=ebola
+REF=refs/ebola_mayinga_1976.fa
+GFF=refs/ebola_mayinga_1976.gff
+
+snpeff_build:
+	make -f src/run/snpeff.mk \
+	    LABEL=${LABEL} \
+	    REF=${REF} \
+	    GFF=${GFF} \
+	    build
+
+# ----------------- Annotate VCF using custom database -----------------
+VCF=vcf/G5731.1.vcf.gz
+ANN=ann/G5731.1.snpeff.vcf.gz
+
+snpeff_run: snpeff_build
+	make -f src/run/snpeff.mk \
+	    LABEL=${LABEL} \
+	    VCF=${VCF} \
+	    ANN=${ANN} \
+	    run
