@@ -172,6 +172,7 @@ VCF=vcf/G5731.1.vcf.gz
 ANN=ann/G5731.1.snpeff.vcf.gz
 
 snpeff_run: snpeff_build
+	mkdir -p ann
 	make -f src/run/snpeff.mk \
 	    LABEL=${LABEL} \
 	    VCF=${VCF} \
