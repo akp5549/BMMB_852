@@ -16,7 +16,7 @@ SRR1972973,SL2014_Run8,ebola,SierraLeone
 make NAME=ebola-1976 refs
 ```
 
-## 4. Using GNU parallel, run the Makefile on 10 samples
+## 4. Using GNU parallel, run the Makefile on 3 samples
 ```
 cat design.csv | \
     parallel --colsep , --header : --eta --lb -j 1 \
