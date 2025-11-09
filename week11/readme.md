@@ -45,14 +45,9 @@ bcftools merge -O z VCF/*.vcf.gz -o all_variants.vcf.gz
 
 
 ## 10. Run snpEff on VCF file:
+### Added to makefile, then run
+```
+make snpeff_run
+```
 
-### Download reference genome
-```
-snpEff download ebola_zaire
-```
-### Annotate VCF
-```
-snpEff -v ebola_zaire all_variants.vcf > annotated_variants.vcf
-```
-### 
 
