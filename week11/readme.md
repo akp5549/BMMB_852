@@ -41,6 +41,18 @@ bcftools merge -O z VCF/*.vcf.gz -o all_variants.vcf.gz
 ```
 
 ## 9. IGV 
+<img width="1912" height="415" alt="image" src="https://github.com/user-attachments/assets/228a2dbf-3728-410b-a3cc-abb15c4e43a6" />
 
 
+## 10. Run snpEff on VCF file:
+
+### Download reference genome
+```
+snpEff download ebola_zaire
+```
+### Annotate VCF
+```
+snpEff -v ebola_zaire all_variants.vcf > annotated_variants.vcf
+```
+### 
 
