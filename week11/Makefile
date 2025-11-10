@@ -156,25 +156,25 @@ variants:
 	bcftools index VCF/${SRR}.vcf.gz
 
 # ----------------- Build custom SnpEff database -----------------
-LABEL=ebola
+LABEL=ebola_1976
 REF=refs/ebola_mayinga_1976.fa
 GFF=refs/ebola_mayinga_1976.gff
 
 snpeff_build:
-	make -f src/run/snpeff.mk \
-	    LABEL=${LABEL} \
-	    REF=${REF} \
-	    GFF=${GFF} \
-	    build
+	@echo "Building custom SnpEff database for ${LABEL}..."
+	mkdir -p data/${LABEL}
+	cp ${REF} data/${LABEL}/sequences.fa
+	cp ${GFF} data/${LABEL}/genes.gff
+	# Add genome entry to snpEff.config manually if not already done:
+	# ebola_1976.genome : Ebola Zaire Virus
+	# ebola_1976.reference : ebola_mayinga_1976
+	# ebola_1976.chromosomes : ebola_mayinga_1976
+	snpEff build -gff3 -v ${LABEL}
 
 # ----------------- Annotate VCF using custom database -----------------
-VCF=vcf/G5731.1.vcf.gz
-ANN=ann/G5731.1.snpeff.vcf.gz
+VCF=VCF/${SRR}.vcf.gz
+ANN=VCF/${SRR}.annotated.vcf
 
 snpeff_run: snpeff_build
-	mkdir -p ann
-	make -f src/run/snpeff.mk \
-	    LABEL=${LABEL} \
-	    VCF=${VCF} \
-	    ANN=${ANN} \
-	    run
+	@echo "Annotating VCF ${VCF} using SnpEff database ${LABEL}..."
+	snpEff ${LABEL} ${VCF} > ${ANN}
