@@ -35,6 +35,13 @@ make all SRR=SRR1972967 NAME=ebola-1976 ACC=AF086833
 
 <img width="1122" height="533" alt="image" src="https://github.com/user-attachments/assets/316a82f3-e5b0-4d81-8113-2de0bc735c1f" />
 
+| SRR ID     | Total Reads | Primary Reads | Mapped Reads | % Mapped (primary) | Coverage Bases | Genome Size (bp) | Avg Depth |
+| ---------- | ----------- | ------------- | ------------ | ------------------ | -------------- | ---------------- | --------- |
+| SRR1972967 | 1028        | 1000          | 611          | 58.3%              | 16,809         | 18,959           | 3.06x     |
+| SRR1972966 | 1031        | 1000          | 645          | 64.5%              | 15,165         | 18,959           | 3.38x     |
+| SRR1972973 | 1017        | 1000          | 492          | 49.2%              | 15,739         | 18,959           | 2.56x     |
+
+
 
 ## 8. Merge VCF files
 ```
