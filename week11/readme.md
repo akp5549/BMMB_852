@@ -14,6 +14,7 @@ SRR1972973,SL2014_Run8,ebola,SierraLeone
 ## 3. Download reference genomes:
 ```
 make NAME=ebola-1976 refs
+bio fetch AF086833 --format gff > refs/ebola_mayinga_1976.gff
 ```
 
 ## 4. Using GNU parallel, run the Makefile on 3 samples
