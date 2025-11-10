@@ -33,7 +33,10 @@ make all SRR=SRR1972967 NAME=ebola-1976 ACC=AF086833
 ## 6. Results and outputs include: 
 ### - genome name, FASTQ read data, FASTQC reports for each read, Alignments and coverage files in BAM and BW formats, statistics alignment reports for each BAM file
 
-<img width="1122" height="533" alt="image" src="https://github.com/user-attachments/assets/316a82f3-e5b0-4d81-8113-2de0bc735c1f" />
+
+<img width="1213" height="650" alt="image" src="https://github.com/user-attachments/assets/8a50259b-fbd3-47c8-abb2-2bd58eba150f" />
+
+
 
 | SRR ID     | Total Reads | Primary Reads | Mapped Reads | % Mapped (primary) | Coverage Bases | Genome Size (bp) | Avg Depth |
 | ---------- | ----------- | ------------- | ------------ | ------------------ | -------------- | ---------------- | --------- |
