@@ -58,10 +58,7 @@ bcftools merge -O z VCF/*.vcf.gz -o all_variants.vcf.gz
 ## 9. Run snpEff on VCF file:
 ### Added to makefile, then run
 ```
-make snpeff_run SRR=SRR1972966
-make snpeff_run SRR=SRR1972967
-make snpeff_run SRR=SRR1972973
-
+make snpeff_all
 ```
 
 
