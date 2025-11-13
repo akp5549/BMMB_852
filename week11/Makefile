@@ -184,3 +184,12 @@ snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
 # Annotate VCF using SnpEff
 snpeff_run: snpeff_build
 	snpEff ann -v ${LABEL} ${VCF_FILE} > ${ANN}
+
+# ----------------- SnpEff Annotation and Summary -----------------
+snpeff_all: all_variants.vcf.gz
+	@echo "Annotating merged VCF with SnpEff..."
+	snpEff ann -v ebola_1976 all_variants.vcf.gz > all_variants.ann.vcf
+	@echo "Generating SnpEff summary..."
+	snpEff summary all_variants.ann.vcf > snpEff_summary.txt
+	@echo "Done: annotated VCF -> all_variants.ann.vcf, summary -> snpEff_summary.txt"
+
