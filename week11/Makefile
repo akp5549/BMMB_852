@@ -165,25 +165,25 @@ ANN = VCF/${SRR}.annotated.vcf
 
 # ----------------- Build custom SnpEff database -----------------
 refs/ebola_mayinga_1976.cleaned.gff: refs/ebola_mayinga_1976.gff
-	# remove problematic lines for SnpEff
-	grep -v "misc_signal" $< | grep -v "five_prime_UTR" | grep -v "Note=" > $@
+	# keep only proper GFF3 lines and remove problematic entries
+	awk -F'\t' 'NF>=9' $< | grep -v "misc_signal" | grep -v "five_prime_UTR" | grep -v "Note=" > $@
 
 snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
-	# make sure snpEff.config exists
+	# ensure snpEff.config exists
 	touch snpEff.config
 	# create database folder
-	mkdir -p data/${LABEL}
-	cp ${SNEFF_REF} data/${LABEL}/sequences.fa
-	cp refs/ebola_mayinga_1976.cleaned.gff data/${LABEL}/genes.gff
+	mkdir -p data/ebola_1976
+	cp refs/ebola-1976.fa data/ebola_1976/sequences.fa
+	cp refs/ebola_mayinga_1976.cleaned.gff data/ebola_1976/genes.gff
 	# add genome info if not already in config
-	@if ! grep -q "^${LABEL}.genome" snpEff.config; then \
-		echo "${LABEL}.genome : Ebola Zaire Virus" >> snpEff.config; \
-		echo "${LABEL}.reference : ebola_mayinga_1976" >> snpEff.config; \
-		echo "${LABEL}.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
+	@if ! grep -q "^ebola_1976.genome" snpEff.config; then \
+		echo "ebola_1976.genome : Ebola Zaire Virus" >> snpEff.config; \
+		echo "ebola_1976.reference : ebola_mayinga_1976" >> snpEff.config; \
+		echo "ebola_1976.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
 	fi
 	# build database
-	snpEff build -gff3 -v ${LABEL}
+	snpEff build -gff3 -v ebola_1976
 
 snpeff_run: snpeff_build
 	# annotate VCF using the built SnpEff database
-	snpEff ann -v ${LABEL} ${VCF_FILE} > ${ANN}
+	snpEff ann -v ebola_1976 VCF/${SRR}.vcf.gz > VCF/${SRR}.annotated.vcf
