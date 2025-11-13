@@ -165,7 +165,8 @@ ANN = VCF/${SRR}.annotated.vcf
 
 # ----------------- Build custom SnpEff database -----------------
 refs/ebola_mayinga_1976.cleaned.gff: refs/ebola_mayinga_1976.gff
-	grep -v "misc_signal" $< | grep -v "five_prime_UTR" > $@
+	# remove problematic lines for SnpEff
+	grep -v "misc_signal" $< | grep -v "five_prime_UTR" | grep -v "Note=" > $@
 
 snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
 	# make sure snpEff.config exists
@@ -183,7 +184,6 @@ snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
 	# build database
 	snpEff build -gff3 -v ${LABEL}
 
-# ----------------- Annotate VCF using custom database -----------------
 snpeff_run: snpeff_build
-	@echo "Annotating VCF ${VCF_FILE} using SnpEff database ${LABEL}..."
-	snpEff ${LABEL} ${VCF_FILE} > ${ANN}
+	# annotate VCF using the built SnpEff database
+	snpEff ann -v ${LABEL} ${VCF_FILE} > ${ANN}
