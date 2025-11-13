@@ -156,40 +156,29 @@ variants:
 	# index VCF
 	bcftools index VCF/${SRR}.vcf.gz
 
-# ----------------- Build & Annotate with SnpEff -----------------
+# ----------------- SnpEff annotation -----------------
 LABEL = ebola_1976
-SNEFF_REF = refs/ebola-1976.fa
-SNEFF_GFF = refs/ebola_mayinga_1976.cleaned.gff
-VCF_FILE = VCF/${SRR}.vcf.gz
-ANN = VCF/${SRR}.annotated.vcf
+REF = refs/ebola-1976.fa
+GFF = refs/ebola_mayinga_1976.cleaned.gff
+VCF = all_variants.vcf.gz
+ANN = all_variants.ann.vcf
 
-# Clean GFF3 for SnpEff
+# Clean GFF for SnpEff
 refs/ebola_mayinga_1976.cleaned.gff: refs/ebola_mayinga_1976.gff
 	awk -F'\t' 'NF>=9' $< | grep -v "misc_signal" | grep -v "five_prime_UTR" | grep -v "Note=" > $@
 
 # Build SnpEff database
 snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
-	mkdir -p data/${LABEL}
-	cp ${SNEFF_REF} data/${LABEL}/sequences.fa
-	cp ${SNEFF_GFF} data/${LABEL}/genes.gff
-	touch snpEff.config
-	@if ! grep -q "^${LABEL}.genome" snpEff.config; then \
-		echo "${LABEL}.genome : Ebola Zaire Virus" >> snpEff.config; \
-		echo "${LABEL}.reference : ebola_mayinga_1976" >> snpEff.config; \
-		echo "${LABEL}.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
-	fi
-	# build the database (note the tab at the start!)
-	snpEff build -gff3 -v -noCheckCds -noCheckProtein ${LABEL}
+	mkdir -p data/$(LABEL)
+	cp $(REF) data/$(LABEL)/sequences.fa
+	cp $(GFF) data/$(LABEL)/genes.gff
+	echo "$(LABEL).genome : Ebola Zaire Virus" > snpEff.config
+	echo "$(LABEL).reference : ebola_mayinga_1976" >> snpEff.config
+	echo "$(LABEL).chromosomes : ebola_mayinga_1976" >> snpEff.config
+	snpEff build -c snpEff.config -gff3 -v $(LABEL)
 
-# Annotate VCF using SnpEff
-snpeff_run: snpeff_build
-	snpEff ann -v ${LABEL} ${VCF_FILE} > ${ANN}
-
-# ----------------- SnpEff Annotation and Summary -----------------
-snpeff_all: all_variants.vcf.gz
-	@echo "Annotating merged VCF with SnpEff..."
-	snpEff ann -v ebola_1976 all_variants.vcf.gz > all_variants.ann.vcf
-	@echo "Generating SnpEff summary..."
-	snpEff summary all_variants.ann.vcf > snpEff_summary.txt
-	@echo "Done: annotated VCF -> all_variants.ann.vcf, summary -> snpEff_summary.txt"
-
+# Annotate merged VCF
+snpeff_all: snpeff_build $(VCF)
+	snpEff -c snpEff.config ann -v $(LABEL) $(VCF) > $(ANN)
+	snpEff -c snpEff.config summary $(ANN) > snpEff_summary.txt
+	@echo "Done! Annotated VCF: $(ANN), summary: snpEff_summary.txt"
