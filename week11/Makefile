@@ -158,14 +158,12 @@ variants:
 
 # ----------------- Build custom SnpEff database -----------------
 LABEL=ebola_1976
-REF=refs/ebola_mayinga_1976.fa
-GFF=refs/ebola_mayinga_1976.cleaned.gff
 
 snpeff_build:
 	@echo "Building custom SnpEff database for ${LABEL}..."
 	mkdir -p data/${LABEL}
-	cp ${REF} data/${LABEL}/sequences.fa
-	cp ${GFF} data/${LABEL}/genes.gff
+	cp ${SNEFF_REF} data/${LABEL}/sequences.fa
+	cp ${SNEFF_GFF} data/${LABEL}/genes.gff
 	@if ! grep -q "^${LABEL}\.genome" snpEff.config; then \
 		echo "${LABEL}.genome : Ebola Zaire Virus" >> snpEff.config; \
 		echo "${LABEL}.reference : ebola_mayinga_1976" >> snpEff.config; \
@@ -175,9 +173,11 @@ snpeff_build:
 
 
 # ----------------- Annotate VCF using custom database -----------------
-VCF=VCF/${SRR}.vcf.gz
+SNEFF_REF=refs/ebola_mayinga_1976.fa
+SNEFF_GFF=refs/ebola_mayinga_1976.cleaned.gff
+VCF_FILE=VCF/${SRR}.vcf.gz
 ANN=VCF/${SRR}.annotated.vcf
 
 snpeff_run: snpeff_build
 	@echo "Annotating VCF ${VCF} using SnpEff database ${LABEL}..."
-	snpEff ${LABEL} ${VCF} > ${ANN}
+	snpEff ${LABEL} ${VCF_FILE} > ${ANN}
