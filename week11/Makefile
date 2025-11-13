@@ -156,9 +156,14 @@ variants:
 	# index VCF
 	bcftools index VCF/${SRR}.vcf.gz
 
-# ----------------- Build custom SnpEff database -----------------
-LABEL=ebola_1976
+# ----------------- SnpEff Variables -----------------
+LABEL = ebola_1976
+SNEFF_REF = refs/ebola_mayinga_1976.fa
+SNEFF_GFF = refs/ebola_mayinga_1976.cleaned.gff
+VCF_FILE = VCF/${SRR}.vcf.gz
+ANN = VCF/${SRR}.annotated.vcf
 
+# ----------------- Build custom SnpEff database -----------------
 snpeff_build:
 	@echo "Building custom SnpEff database for ${LABEL}..."
 	mkdir -p data/${LABEL}
@@ -171,13 +176,7 @@ snpeff_build:
 	fi
 	snpEff build -gff3 -v ${LABEL}
 
-
 # ----------------- Annotate VCF using custom database -----------------
-SNEFF_REF=refs/ebola_mayinga_1976.fa
-SNEFF_GFF=refs/ebola_mayinga_1976.cleaned.gff
-VCF_FILE=VCF/${SRR}.vcf.gz
-ANN=VCF/${SRR}.annotated.vcf
-
 snpeff_run: snpeff_build
-	@echo "Annotating VCF ${VCF} using SnpEff database ${LABEL}..."
+	@echo "Annotating VCF ${VCF_FILE} using SnpEff database ${LABEL}..."
 	snpEff ${LABEL} ${VCF_FILE} > ${ANN}
