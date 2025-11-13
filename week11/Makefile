@@ -166,11 +166,13 @@ snpeff_build:
 	mkdir -p data/${LABEL}
 	cp ${REF} data/${LABEL}/sequences.fa
 	cp ${GFF} data/${LABEL}/genes.gff
-	# Add genome entry to snpEff.config manually if not already done:
-	# ebola_1976.genome : Ebola Zaire Virus
-	# ebola_1976.reference : ebola_mayinga_1976
-	# ebola_1976.chromosomes : ebola_mayinga_1976
+	@if ! grep -q "^${LABEL}\.genome" snpEff.config; then \
+		echo "${LABEL}.genome : Ebola Zaire Virus" >> snpEff.config; \
+		echo "${LABEL}.reference : ebola_mayinga_1976" >> snpEff.config; \
+		echo "${LABEL}.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
+	fi
 	snpEff build -gff3 -v ${LABEL}
+
 
 # ----------------- Annotate VCF using custom database -----------------
 VCF=VCF/${SRR}.vcf.gz
