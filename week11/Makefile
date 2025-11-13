@@ -164,8 +164,10 @@ VCF_FILE = VCF/${SRR}.vcf.gz
 ANN = VCF/${SRR}.annotated.vcf
 
 # ----------------- Build custom SnpEff database -----------------
-snpeff_build:
-	@echo "Building custom SnpEff database for ${LABEL}..."
+refs/ebola_mayinga_1976.cleaned.gff: refs/ebola_mayinga_1976.gff
+	grep -v "misc_signal" $< | grep -v "five_prime_UTR" > $@
+
+snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
 	mkdir -p data/${LABEL}
 	cp ${SNEFF_REF} data/${LABEL}/sequences.fa
 	cp ${SNEFF_GFF} data/${LABEL}/genes.gff
@@ -175,6 +177,7 @@ snpeff_build:
 		echo "${LABEL}.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
 	fi
 	snpEff build -gff3 -v ${LABEL}
+
 
 # ----------------- Annotate VCF using custom database -----------------
 snpeff_run: snpeff_build
