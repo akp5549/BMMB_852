@@ -159,7 +159,7 @@ variants:
 # ----------------- Build custom SnpEff database -----------------
 LABEL=ebola_1976
 REF=refs/ebola_mayinga_1976.fa
-GFF=refs/ebola_mayinga_1976.gff
+GFF=refs/ebola_mayinga_1976.cleaned.gff
 
 snpeff_build:
 	@echo "Building custom SnpEff database for ${LABEL}..."
