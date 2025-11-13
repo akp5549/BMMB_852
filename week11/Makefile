@@ -158,8 +158,8 @@ variants:
 
 # ----------------- SnpEff Variables -----------------
 LABEL = ebola_1976
-SNEFF_REF = refs/ebola_mayinga_1976.fa
-SNEFF_GFF = refs/ebola_mayinga_1976.cleaned.gff
+SNEFF_REF = refs/ebola-1976.fa
+SNEFF_GFF = refs/ebola_mayinga_1976.gff
 VCF_FILE = VCF/${SRR}.vcf.gz
 ANN = VCF/${SRR}.annotated.vcf
 
