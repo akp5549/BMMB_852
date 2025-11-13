@@ -167,17 +167,20 @@ ANN = VCF/${SRR}.annotated.vcf
 refs/ebola_mayinga_1976.cleaned.gff: refs/ebola_mayinga_1976.gff
 	awk -F'\t' 'NF>=9' $< | grep -v "misc_signal" | grep -v "five_prime_UTR" | grep -v "Note=" > $@
 
+# Build SnpEff database
 snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
 	mkdir -p data/${LABEL}
 	cp ${SNEFF_REF} data/${LABEL}/sequences.fa
-	cp refs/ebola_mayinga_1976.cleaned.gff data/${LABEL}/genes.gff
+	cp ${SNEFF_GFF} data/${LABEL}/genes.gff
 	touch snpEff.config
 	@if ! grep -q "^${LABEL}.genome" snpEff.config; then \
 		echo "${LABEL}.genome : Ebola Zaire Virus" >> snpEff.config; \
 		echo "${LABEL}.reference : ebola_mayinga_1976" >> snpEff.config; \
 		echo "${LABEL}.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
 	fi
-	snpEff build -gff3 -v -noCheck ${LABEL}
+	# build the database (note the tab at the start!)
+	snpEff build -gff3 -v -noCheckCds -noCheckProtein ${LABEL}
 
+# Annotate VCF using SnpEff
 snpeff_run: snpeff_build
 	snpEff ann -v ${LABEL} ${VCF_FILE} > ${ANN}
