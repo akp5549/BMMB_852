@@ -168,16 +168,20 @@ refs/ebola_mayinga_1976.cleaned.gff: refs/ebola_mayinga_1976.gff
 	grep -v "misc_signal" $< | grep -v "five_prime_UTR" > $@
 
 snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
+	# make sure snpEff.config exists
+	touch snpEff.config
+	# create database folder
 	mkdir -p data/${LABEL}
 	cp ${SNEFF_REF} data/${LABEL}/sequences.fa
-	cp ${SNEFF_GFF} data/${LABEL}/genes.gff
-	@if ! grep -q "^${LABEL}\.genome" snpEff.config; then \
+	cp refs/ebola_mayinga_1976.cleaned.gff data/${LABEL}/genes.gff
+	# add genome info if not already in config
+	@if ! grep -q "^${LABEL}.genome" snpEff.config; then \
 		echo "${LABEL}.genome : Ebola Zaire Virus" >> snpEff.config; \
 		echo "${LABEL}.reference : ebola_mayinga_1976" >> snpEff.config; \
 		echo "${LABEL}.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
 	fi
+	# build database
 	snpEff build -gff3 -v ${LABEL}
-
 
 # ----------------- Annotate VCF using custom database -----------------
 snpeff_run: snpeff_build
