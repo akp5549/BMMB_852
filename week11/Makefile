@@ -201,3 +201,18 @@ snpeff_all:
 			> VCF/$$srr.annotated.vcf; \
 	done
 	@echo "SnpEff annotation complete for all SRRs."
+
+# SnpEff annotation for multiple SRRs
+SRR_LIST = SRR1972966 SRR1972967 SRR1972973
+GENOME = ebola_1976
+
+snpeff_all:
+	mkdir -p VCF
+	for srr in $(SRR_LIST); do \
+		echo "Running SnpEff on $$srr"; \
+		snpEff -c snpEff.config -v -noDownload $(GENOME) \
+			VCF/$$srr.vcf.gz \
+			-stats VCF/$$srr.snpEff_summary.html \
+			> VCF/$$srr.annotated.vcf; \
+	done
+	echo "SnpEff annotation complete for all SRRs."
