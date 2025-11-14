@@ -190,4 +190,6 @@ snpeff_run: snpeff_build
 snpeff_all:
 	for srr in SRR1972966 SRR1972967 SRR1972973; do \
 		make snpeff_run SRR=$$srr; \
+	done
+
 	
