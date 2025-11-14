@@ -187,13 +187,16 @@ snpeff_run: snpeff_build
 	# generate a per-SRR summary HTML
 	snpEff ann -v -stats VCF/${SRR}.snpEff_summary.html ${LABEL} ${VCF_FILE} > ${ANN}
 
+# List of SRR IDs
 SRR_LIST = SRR1972966 SRR1972967 SRR1972973
 
+# Target to run SnpEff on all SRRs
 snpeff_all:
 	for srr in $(SRR_LIST); do \
 	    echo "Running SnpEff on $$srr"; \
-	    snpEff -c $(CURDIR)/snpEff.config -v -noDownload ebola_1976 \
+	    snpEff -c snpEff.config -v -noDownload ebola_1976 \
 	        VCF/$$srr.vcf.gz \
 	        -stats VCF/$$srr.snpEff_summary.html \
 	        > VCF/$$srr.annotated.vcf; \
 	done
+
