@@ -187,3 +187,7 @@ snpeff_run: snpeff_build
 	# generate a per-SRR summary HTML
 	snpEff ann -v -stats VCF/${SRR}.snpEff_summary.html ${LABEL} ${VCF_FILE} > ${ANN}
 
+snpeff_all:
+	for srr in SRR1972966 SRR1972967 SRR1972973; do \
+		make snpeff_run SRR=$$srr; \
+	
