@@ -181,6 +181,9 @@ snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
 	# build the database (note the tab at the start!)
 	snpEff build -gff3 -v -noCheckCds -noCheckProtein ${LABEL}
 
-# Annotate VCF using SnpEff
+# Annotate VCF using SnpEff with per-SRR summary
 snpeff_run: snpeff_build
-	snpEff ann -v ${LABEL} ${VCF_FILE} > ${ANN}
+	mkdir -p VCF
+	# generate a per-SRR summary HTML
+	snpEff ann -v -stats VCF/${SRR}.snpEff_summary.html ${LABEL} ${VCF_FILE} > ${ANN}
+
