@@ -187,9 +187,10 @@ snpeff_run: snpeff_build
 	# generate a per-SRR summary HTML
 	snpEff ann -v -stats VCF/${SRR}.snpEff_summary.html ${LABEL} ${VCF_FILE} > ${ANN}
 
-snpeff_all:
-	for srr in SRR1972966 SRR1972967 SRR1972973; do \
-		make snpeff_run SRR=$$srr; \
-	done
+snpeff_all: $(SRR_LIST)
+    for srr in $^; do \
+        snpEff ann -v ebola_1976 VCF/$${srr}.vcf.gz > VCF/$${srr}.annotated.vcf; \
+        snpEff dump -v ebola_1976 VCF/$${srr}.annotated.vcf > VCF/$${srr}.snpEff_summary.txt; \
+    done
 
 	
