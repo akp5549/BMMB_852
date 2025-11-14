@@ -158,10 +158,9 @@ variants:
 
 # ----------------- Build & Annotate with SnpEff -----------------
 LABEL = ebola_1976
+GENOME = ebola_1976
 SNEFF_REF = refs/ebola-1976.fa
 SNEFF_GFF = refs/ebola_mayinga_1976.cleaned.gff
-VCF_FILE = VCF/${SRR}.vcf.gz
-ANN = VCF/${SRR}.annotated.vcf
 
 # Clean GFF3 for SnpEff
 refs/ebola_mayinga_1976.cleaned.gff: refs/ebola_mayinga_1976.gff
@@ -172,47 +171,26 @@ snpeff_build: refs/ebola_mayinga_1976.cleaned.gff
 	mkdir -p data/${LABEL}
 	cp ${SNEFF_REF} data/${LABEL}/sequences.fa
 	cp ${SNEFF_GFF} data/${LABEL}/genes.gff
+	# create minimal config if missing
 	touch snpEff.config
 	@if ! grep -q "^${LABEL}.genome" snpEff.config; then \
 		echo "${LABEL}.genome : Ebola Zaire Virus" >> snpEff.config; \
 		echo "${LABEL}.reference : ebola_mayinga_1976" >> snpEff.config; \
 		echo "${LABEL}.chromosomes : ebola_mayinga_1976" >> snpEff.config; \
 	fi
-	# build the database (note the tab at the start!)
+	# build the database
 	snpEff build -gff3 -v -noCheckCds -noCheckProtein ${LABEL}
 
-# Annotate VCF using SnpEff with per-SRR summary
-snpeff_run: snpeff_build
-	mkdir -p VCF
-	# generate a per-SRR summary HTML
-	snpEff ann -v -stats VCF/${SRR}.snpEff_summary.html ${LABEL} ${VCF_FILE} > ${ANN}
-
-# List of SRR IDs
+# Annotate VCFs with SnpEff
 SRR_LIST = SRR1972966 SRR1972967 SRR1972973
 
-# Annotate VCFs with SnpEff
-snpeff_all:
+snpeff_all: snpeff_build
 	mkdir -p VCF
 	for srr in $(SRR_LIST); do \
 		echo "Running SnpEff on $$srr"; \
-		snpEff -c snpEff.config -v -noDownload ebola_1976 \
+		snpEff -c snpEff.config -v -noDownload ${GENOME} \
 			VCF/$$srr.vcf.gz \
 			-stats VCF/$$srr.snpEff_summary.html \
 			> VCF/$$srr.annotated.vcf; \
 	done
 	@echo "SnpEff annotation complete for all SRRs."
-
-# SnpEff annotation for multiple SRRs
-SRR_LIST = SRR1972966 SRR1972967 SRR1972973
-GENOME = ebola_1976
-
-snpeff_all:
-	mkdir -p VCF
-	for srr in $(SRR_LIST); do \
-		echo "Running SnpEff on $$srr"; \
-		snpEff -c snpEff.config -v -noDownload $(GENOME) \
-			VCF/$$srr.vcf.gz \
-			-stats VCF/$$srr.snpEff_summary.html \
-			> VCF/$$srr.annotated.vcf; \
-	done
-	echo "SnpEff annotation complete for all SRRs."
