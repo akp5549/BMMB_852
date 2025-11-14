@@ -190,8 +190,9 @@ snpeff_run: snpeff_build
 snpeff_all:
 	for srr in SRR1972966 SRR1972967 SRR1972973; do \
 		echo "Running SnpEff on $$srr"; \
-		snpEff -c snpEff.config ann -v -stats VCF/$$srr.snpEff_summary.html ebola_1976 VCF/$$srr.vcf.gz > VCF/$$srr.annotated.vcf; \
+		snpEff -c snpEff.config -v ebola_1976 VCF/$$srr.vcf.gz -stats VCF/$$srr.snpEff_summary.html > VCF/$$srr.annotated.vcf; \
 	done
+
 
 
 	
