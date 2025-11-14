@@ -190,13 +190,14 @@ snpeff_run: snpeff_build
 # List of SRR IDs
 SRR_LIST = SRR1972966 SRR1972967 SRR1972973
 
-# target: snpeff_all
+# Annotate VCFs with SnpEff
 snpeff_all:
-	for srr in SRR1972966 SRR1972967 SRR1972973; do \
+	mkdir -p VCF
+	for srr in $(SRR_LIST); do \
 		echo "Running SnpEff on $$srr"; \
 		snpEff -c snpEff.config -v -noDownload ebola_1976 \
 			VCF/$$srr.vcf.gz \
 			-stats VCF/$$srr.snpEff_summary.html \
 			> VCF/$$srr.annotated.vcf; \
 	done
-
+	@echo "SnpEff annotation complete for all SRRs."
