@@ -1,9 +1,9 @@
-# Makefile for Ebola genome alignment project
+# Makefile for cancer genome
 
 # Variables
-ACC=AF086833
-NAME=ebola-1976
-SRR=SRR35257019
+ACC=x
+NAME=x
+SRR=x
 SPOTS=1000
 
 REF=refs/${NAME}.fa
