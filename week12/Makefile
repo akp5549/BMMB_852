@@ -7,9 +7,9 @@ SRR ?= SRR11321730 SRR30646122 SRR30646126
 SPOTS ?= 1000
 THREADS ?= 4
 
-REF := refs/${NAME}.fa
+REF := refs/GRCh38.fa
+CHROMSIZES := refs/GRCh38.chrom.sizes
 FAI := ${REF}.fai
-CHROMSIZES := refs/${NAME}.chrom.sizes
 
 # Per-sample derived filenames
 R1 = reads/$1_1.fastq
@@ -37,8 +37,8 @@ usage:
 # ----------------- Download Reference Genome -----------------
 refs:
 	mkdir -p refs
-	bio fetch ${ACC} --format fasta > ${REF}
-	bio fetch ${ACC} --format gff > refs/${NAME}.gff
+	bio fetch ${ACC} --format fasta -o ${REF}
+	bio fetch ${ACC} --format gff -o refs/GRCh38.gff
 	samtools faidx ${REF}
 	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
 
