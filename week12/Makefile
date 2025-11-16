@@ -7,8 +7,8 @@ SRR ?= SRR11321730 SRR30646122 SRR30646126
 SPOTS ?= 1000
 THREADS ?= 4
 
-REF := refs/GRCh38.fa
-CHROMSIZES := refs/GRCh38.chrom.sizes
+REF := refs/chr12.fasta
+CHROMSIZES := refs/chr12.chrom.sizes
 FAI := ${REF}.fai
 
 # Per-sample derived filenames
