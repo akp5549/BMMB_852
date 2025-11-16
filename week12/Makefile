@@ -34,13 +34,9 @@ all: refs fastq fastqc align stats
 usage:
 	@echo "Usage: make [all|refs|fastq|index|align|stats] SRR=<run> NAME=<name> ACC=<acc>"
 
-# ----------------- Download Reference Genome -----------------
+# ----------------- Reference Genome -----------------
 refs:
-	mkdir -p refs
-	bio fetch ${ACC} --format fasta -o ${REF}
-	bio fetch ${ACC} --format gff -o refs/GRCh38.gff
-	samtools faidx ${REF}
-	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
+	@echo "Reference genome already downloaded and indexed at ${REF}"
 
 # ----------------- Download FASTQ Reads -----------------
 fastq:
@@ -55,10 +51,7 @@ fastqc:
 	fastqc reads/*.fastq -o fastqc_reports
 
 # ----------------- Index Reference Genome -----------------
-${REF}:
-	make refs
-
-${REF}.bwt: ${REF}
+${REF}.bwt: 
 	bwa index ${REF}
 
 index: ${REF}.bwt
