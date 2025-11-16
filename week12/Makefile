@@ -7,8 +7,15 @@ SRR ?= SRR11321730 SRR30646122 SRR30646126
 SPOTS ?= 1000
 THREADS ?= 4
 
-REF := refs/chr12.fasta
-CHROMSIZES := refs/chr12.chrom.sizes
+# KRAS region coordinates
+CHR := chr12
+START := 25205246
+END := 25250936
+
+# Reference for KRAS only
+FULL_REF := refs/GRCh38.fasta      # full genome from step 1
+REF := refs/KRAS.fasta             # extracted KRAS region
+CHROMSIZES := refs/KRAS.chrom.sizes
 FAI := ${REF}.fai
 
 # Per-sample derived filenames
@@ -25,18 +32,26 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq fastqc index align stats clean alignment_summary variants
+.PHONY: all usage refs fastq fastqc index align stats clean alignment_summary variants extract_region
 
 # ----------------- Default Workflow -----------------
-all: refs fastq fastqc align stats
+all: extract_region fastq fastqc align stats
 
 # ----------------- Usage Message -----------------
 usage:
 	@echo "Usage: make [all|refs|fastq|index|align|stats] SRR=<run> NAME=<name> ACC=<acc>"
 
-# ----------------- Reference Genome -----------------
+# ----------------- Extract KRAS Region -----------------
+extract_region:
+	mkdir -p refs
+	# extract only KRAS region from the full reference genome
+	samtools faidx ${FULL_REF} ${CHR}:${START}-${END} > ${REF}
+	samtools faidx ${REF}
+	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
+
+# ----------------- Reference Genome (skip download) -----------------
 refs:
-	@echo "Reference genome already downloaded and indexed at ${REF}"
+	@echo "Reference genome assumed downloaded as ${FULL_REF} (from Step 1)"
 
 # ----------------- Download FASTQ Reads -----------------
 fastq:
@@ -96,4 +111,4 @@ alignment_summary:
 	done
 
 clean:
-	rm -rf bam reads fastqc_reports refs/*.gff *.bw *.bedgraph coverage
+	rm -rf bam reads fastqc_reports refs/KRAS.fasta refs/KRAS.fasta.fai refs/KRAS.chrom.sizes
