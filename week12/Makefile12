@@ -7,17 +7,14 @@ SRR ?= SRR11321730 SRR30646122 SRR30646126
 SPOTS ?= 1000
 THREADS ?= 4
 
-BAM_DIR := bam
-BG := coverage/${SRR}.bedgraph
-BIGWIG := coverage/${SRR}.bw
-COVERAGE := coverage/${SRR}.txt
-CHROMSIZES := refs/${NAME}.chrom.sizes
-FAI := ${REF}.fai
-
 REF := refs/${NAME}.fa
-R1 := reads/${SRR}_1.fastq
-R2 := reads/${SRR}_2.fastq
-BAM := ${BAM_DIR}/${SRR}.bam
+FAI := ${REF}.fai
+CHROMSIZES := refs/${NAME}.chrom.sizes
+
+# Per-sample derived filenames
+R1 = reads/$1_1.fastq
+R2 = reads/$1_2.fastq
+BAM = bam/$1.bam
 
 # ----------------- Shell Settings -----------------
 SHELL := bash
@@ -28,39 +25,34 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig variants 
+.PHONY: all usage refs fastq fastqc index align stats clean alignment_summary variants
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats variants
+all: refs fastq fastqc align stats
 
 # ----------------- Usage Message -----------------
 usage:
-	@echo "Usage: make [all|refs|fastq|index|align|stats|coverage|bigwig|clean] SRR=<SRR> NAME=<name> ACC=<acc>"
+	@echo "Usage: make [all|refs|fastq|index|align|stats] SRR=<run> NAME=<name> ACC=<acc>"
 
 # ----------------- Download Reference Genome -----------------
 refs:
-	mkdir -p $(dir ${REF})
+	mkdir -p refs
 	bio fetch ${ACC} --format fasta > ${REF}
-	bio fetch ${ACC} --format gff > refs/ebola_mayinga_1976.gff
-	# create FASTA index and chrom.sizes needed for bigWig
+	bio fetch ${ACC} --format gff > refs/${NAME}.gff
 	samtools faidx ${REF}
 	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
-	seqkit stats ${REF}
 
 # ----------------- Download FASTQ Reads -----------------
 fastq:
-	mkdir -p $(dir ${R1})
-	# download reads (handles single-end and paired-end SRA runs)
-	fastq-dump -X ${SPOTS} --split-files -O reads ${SRR}
-	@if [ -f "${R2}" ]; then \
-		seqkit stats ${R1} ${R2}; \
-	else \
-		seqkit stats ${R1}; \
-	fi
+	mkdir -p reads
+	for s in ${SRR}; do \
+		fastq-dump -X ${SPOTS} --split-files -O reads $$s; \
+	done
+	seqkit stats reads/*
 
 fastqc:
 	mkdir -p fastqc_reports
-	fastqc reads/${SRR}_*.fastq -o fastqc_reports
+	fastqc reads/*.fastq -o fastqc_reports
 
 # ----------------- Index Reference Genome -----------------
 ${REF}:
@@ -68,44 +60,47 @@ ${REF}:
 
 ${REF}.bwt: ${REF}
 	bwa index ${REF}
+
 index: ${REF}.bwt
 
-# ----------------- align -> BAM + index -----------------
-align: fastq ${REF}.bwt
-	mkdir -p ${BAM_DIR}
-	# align, sort, write BAM (handles single-end or paired-end)
-ifneq ("$(wildcard ${R2})","")
-	@echo "Detected paired-end reads: ${R1} ${R2}"
-	@bwa mem -t ${THREADS} ${REF} ${R1} ${R2} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}
-else
-	@echo "Detected single-end reads: ${R1}"
-	@bwa mem -t ${THREADS} ${REF} ${R1} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}
-endif
-	# index BAM
-	samtools index ${BAM}
+# ----------------- Align each SRR separately -----------------
+align: index fastq
+	mkdir -p bam
+	for s in ${SRR}; do \
+		if [ -f "reads/$${s}_2.fastq" ]; then \
+			echo "Paired-end for $$s"; \
+			bwa mem -t ${THREADS} ${REF} reads/$${s}_1.fastq reads/$${s}_2.fastq \
+			| samtools sort -@ ${THREADS} -o bam/$${s}.bam; \
+		else \
+			echo "Single-end for $$s"; \
+			bwa mem -t ${THREADS} ${REF} reads/$${s}_1.fastq \
+			| samtools sort -@ ${THREADS} -o bam/$${s}.bam; \
+		fi; \
+		samtools index bam/$${s}.bam; \
+	done
 
-# ----------------- Simple Alignment Stats -----------------
-stats: ${BAM}
-	@echo "samtools flagstat for ${BAM}:"
-	samtools flagstat ${BAM}
-	@echo ""
-	@echo "samtools coverage for ${BAM}:"
-	samtools coverage ${BAM}
+# ----------------- Per-sample SAM/BAM Stats -----------------
+stats:
+	for s in ${SRR}; do \
+		echo "===== $$s ====="; \
+		samtools flagstat bam/$${s}.bam; \
+		echo ""; \
+		samtools coverage bam/$${s}.bam; \
+		echo ""; \
+	done
 
 # ----------------- Alignment Summary -----------------
-alignment_summary: ${BAM}
-	@echo "Generating alignment summary for ${BAM}:"
-	@total_reads=$$(samtools view -c -F 0x904 ${BAM}); \
-	aligned_reads=$$(samtools view -c -F 0x4 ${BAM}); \
-	perc=$$(awk -v a=$$aligned_reads -v t=$$total_reads 'BEGIN{ if (t>0) printf("%.2f", (a/t)*100) else print "NA" }'); \
-	echo "Total primary alignments (excl unmapped/secondary/supplementary): $$total_reads"; \
-	echo "Aligned reads (not flagged as unmapped): $$aligned_reads"; \
-	echo "Percent aligned: $$perc %"; \
-	\
-	@echo ""; \
-	@echo "Expected coverage estimate (approx):"; \
-	@echo "Genome size (bp): $$(awk '{s+=$$2} END{print s}' ${CHROMSIZES})"; \
-	@echo "Spots downloaded: ${SPOTS}"; \
-	@echo "Estimated read length (bp): 200"; \
-	@echo "Estimated total sequenced bases: "$$((${SPOTS} * 200)); \
-	@echo "Estimated coverage (x): "$$((${SPOTS} * 200) / $$(awk '{s+=$$2} END{print s}' ${CHROMSIZES}))
+alignment_summary:
+	for s in ${SRR}; do \
+		echo "===== $$s ====="; \
+		total_reads=$$(samtools view -c -F 0x904 bam/$${s}.bam); \
+		aligned_reads=$$(samtools view -c -F 0x4 -F 0x904 bam/$${s}.bam); \
+		perc=$$(awk -v a=$$aligned_reads -v t=$$total_reads 'BEGIN{ if(t>0) printf("%.2f", (a/t)*100); else print "NA" }'); \
+		echo "Total primary reads: $$total_reads"; \
+		echo "Aligned reads: $$aligned_reads"; \
+		echo "Percent aligned: $$perc %"; \
+		echo ""; \
+	done
+
+clean:
+	rm -rf bam reads fastqc_reports refs/*.gff *.bw *.bedgraph coverage
