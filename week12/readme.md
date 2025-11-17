@@ -55,6 +55,16 @@ cat design.csv | \
 ```
 
 ## 4. Comparing alignment statistics:
+| Statistic            | SRR11321730 (Illumina) | SRR30646122 (Nanopore) | SRR30646126 (PacBio) |
+| -------------------- | ---------------------- | ---------------------- | -------------------- |
+| Total reads          | 1000                   | 1000                   | 1000                 |
+| Primary mapped reads | 729                    | 4747                   | 2844                 |
+| Coverage (%)         | 72.90                  | 99.63                  | 10.85                |
+| Mean depth           | 24.41                  | 24.41                  | 13.45                |
+| Mean base quality    | 39.5                   | 39.5                   | 37.5                 |
+| Mean mapping quality | 32.7                   | 32.7                   | 30.3                 |
+
 
 
 ## 5. IGV
+<img width="1908" height="1017" alt="image" src="https://github.com/user-attachments/assets/72130328-c519-4351-9f0a-7423b019d8c7" />
