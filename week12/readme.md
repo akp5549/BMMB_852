@@ -46,21 +46,15 @@ samtools index ${BAM}
 samtools flagstat ${BAM}
 ```
 
-## 3. Unzip full genome file
-```
-gunzip -c refs/GRCh38.fasta.gz > refs/GRCh38.fasta
-samtools faidx refs/GRCh38.fasta
 
-```
-
-## 4. Use GNU parallel to run makefile on all samples:
+## 3. Use GNU parallel to run makefile on all samples:
 ```
 cat design.csv | \
     parallel --colsep , --header : --eta --lb -j 1 \
         make SRR={Run} NAME=ebola-1976 SAMPLE={Sample} GROUP={Group} CONDITION={Condition} all
 ```
 
-## 5. Comparing alignment statistics:
+## 4. Comparing alignment statistics:
 
 
-## 6. IGV
+## 5. IGV
