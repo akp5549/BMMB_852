@@ -51,7 +51,7 @@ samtools flagstat ${BAM}
 ```
 cat design.csv | \
     parallel --colsep , --header : --eta --lb -j 1 \
-        make SRR={Run} NAME=ebola-1976 SAMPLE={Sample} GROUP={Group} CONDITION={Condition} all
+        make SRR={Run} NAME=CBG SAMPLE={Sample} GROUP={Group} CONDITION={Condition} all
 ```
 
 ## 4. Comparing alignment statistics:
