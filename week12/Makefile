@@ -1,4 +1,4 @@
-# Makefile for cancer genome alignment project (KRAS region)
+# Makefile for cancer genome alignment project (KRAS region only)
 
 # ----------------- Variable Definitions -----------------
 ACC ?= GCA_000001405.28
@@ -13,8 +13,8 @@ START := 25205246
 END := 25250936
 
 # Reference for KRAS only
-FULL_REF := refs/chr12.fasta      # full chromosome from step 1
-REF := refs/KRAS.fasta            # extracted KRAS region
+FULL_REF := refs/chr12.fasta       # full genome from Step 1
+REF := refs/KRAS.fasta             # extracted KRAS region
 CHROMSIZES := refs/KRAS.chrom.sizes
 FAI := ${REF}.fai
 
@@ -32,10 +32,10 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq fastqc index align stats clean alignment_summary extract_region
+.PHONY: all usage refs fastq index align stats clean alignment_summary variants extract_region
 
 # ----------------- Default Workflow -----------------
-all: extract_region fastq fastqc align stats
+all: extract_region fastq align stats
 
 # ----------------- Usage Message -----------------
 usage:
@@ -65,12 +65,8 @@ fastq:
 	done
 	seqkit stats reads/*
 
-fastqc:
-	mkdir -p fastqc_reports
-	fastqc reads/*.fastq -o fastqc_reports
-
 # ----------------- Index Reference Genome -----------------
-${REF}.bwt:
+${REF}.bwt: 
 	bwa index ${REF}
 
 index: ${REF}.bwt
@@ -114,5 +110,6 @@ alignment_summary:
 		echo ""; \
 	done
 
+# ----------------- Clean -----------------
 clean:
 	rm -rf bam reads fastqc_reports refs/KRAS.fasta refs/KRAS.fasta.fai refs/KRAS.chrom.sizes
