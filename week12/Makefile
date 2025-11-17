@@ -1,6 +1,7 @@
-# Makefile for cancer genome alignment project (KRAS region only)
+# Makefile for cancer genome alignment project (KRAS region)
 
 # ----------------- Variable Definitions -----------------
+ACC ?= GCA_000001405.28
 NAME ?= PRJNA200694
 SRR ?= SRR11321730 SRR30646122 SRR30646126
 SPOTS ?= 1000
@@ -12,8 +13,8 @@ START := 25205246
 END := 25250936
 
 # Reference for KRAS only
-FULL_REF := refs/GRCh38.fasta      # full genome from step 1
-REF := refs/KRAS.fasta             # extracted KRAS region
+FULL_REF := refs/chr12.fasta      # full chromosome from step 1
+REF := refs/KRAS.fasta            # extracted KRAS region
 CHROMSIZES := refs/KRAS.chrom.sizes
 FAI := ${REF}.fai
 
@@ -38,13 +39,13 @@ all: extract_region fastq fastqc align stats
 
 # ----------------- Usage Message -----------------
 usage:
-	@echo "Usage: make [all|refs|fastq|index|align|stats] SRR=<run> NAME=<name>"
+	@echo "Usage: make [all|refs|fastq|index|align|stats] SRR=<run> NAME=<name> ACC=<acc>"
 
 # ----------------- Extract KRAS Region -----------------
 extract_region:
 	mkdir -p refs
 	if [ ! -s ${REF} ]; then \
-		echo "Extracting KRAS region from full genome"; \
+		echo "Extracting KRAS region from ${FULL_REF}"; \
 		samtools faidx ${FULL_REF} ${CHR}:${START}-${END} > ${REF}; \
 		samtools faidx ${REF}; \
 		cut -f1,2 ${REF}.fai > ${CHROMSIZES}; \
@@ -54,7 +55,7 @@ extract_region:
 
 # ----------------- Reference Genome (skip download) -----------------
 refs:
-	@echo "Full genome assumed downloaded as ${FULL_REF} (from Step 1)"
+	@echo "Reference genome assumed downloaded as ${FULL_REF} (from Step 1)"
 
 # ----------------- Download FASTQ Reads -----------------
 fastq:
