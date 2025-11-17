@@ -1,7 +1,6 @@
-# Makefile for cancer genome alignment project
+# Makefile for cancer genome alignment project (KRAS region only)
 
 # ----------------- Variable Definitions -----------------
-ACC ?= GCA_000001405.28
 NAME ?= PRJNA200694
 SRR ?= SRR11321730 SRR30646122 SRR30646126
 SPOTS ?= 1000
@@ -32,26 +31,30 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq fastqc index align stats clean alignment_summary variants extract_region
+.PHONY: all usage refs fastq fastqc index align stats clean alignment_summary extract_region
 
 # ----------------- Default Workflow -----------------
 all: extract_region fastq fastqc align stats
 
 # ----------------- Usage Message -----------------
 usage:
-	@echo "Usage: make [all|refs|fastq|index|align|stats] SRR=<run> NAME=<name> ACC=<acc>"
+	@echo "Usage: make [all|refs|fastq|index|align|stats] SRR=<run> NAME=<name>"
 
 # ----------------- Extract KRAS Region -----------------
 extract_region:
 	mkdir -p refs
-	# extract only KRAS region from the full reference genome
-	samtools faidx ${FULL_REF} ${CHR}:${START}-${END} > ${REF}
-	samtools faidx ${REF}
-	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
+	if [ ! -s ${REF} ]; then \
+		echo "Extracting KRAS region from full genome"; \
+		samtools faidx ${FULL_REF} ${CHR}:${START}-${END} > ${REF}; \
+		samtools faidx ${REF}; \
+		cut -f1,2 ${REF}.fai > ${CHROMSIZES}; \
+	else \
+		echo "KRAS reference already exists at ${REF}"; \
+	fi
 
 # ----------------- Reference Genome (skip download) -----------------
 refs:
-	@echo "Reference genome assumed downloaded as ${FULL_REF} (from Step 1)"
+	@echo "Full genome assumed downloaded as ${FULL_REF} (from Step 1)"
 
 # ----------------- Download FASTQ Reads -----------------
 fastq:
@@ -66,7 +69,7 @@ fastqc:
 	fastqc reads/*.fastq -o fastqc_reports
 
 # ----------------- Index Reference Genome -----------------
-${REF}.bwt: 
+${REF}.bwt:
 	bwa index ${REF}
 
 index: ${REF}.bwt
