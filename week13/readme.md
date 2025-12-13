@@ -8,3 +8,6 @@ bio search --header --csv  PRJNA887926 > metadata.csv
 
 
 ## 3. Download the reference genome
+```
+bio fetch NC_007793.1 --format gff > refs/staphylococcus_aureus.gff
+```
