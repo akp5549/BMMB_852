@@ -25,10 +25,10 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig variants 
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig  
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats variants
+all: fastq fastqc align stats 
 
 # ----------------- Usage Message -----------------
 usage:
