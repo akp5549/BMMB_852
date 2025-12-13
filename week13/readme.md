@@ -4,3 +4,7 @@ Week 13
 ```
 bio search --header --csv  PRJNA887926 > metadata.csv
 ```
+## 2. Create a design.csv file
+
+
+## 3. 
