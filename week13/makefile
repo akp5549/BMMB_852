@@ -16,6 +16,15 @@ R1 := reads/${SRR}_1.fastq
 R2 := reads/${SRR}_2.fastq
 BAM := ${BAM_DIR}/${SRR}.bam
 
+# ----------------- All Samples Loop -----------------
+DESIGN := design.csv
+ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -f1)
+
+all_samples:
+	@for srr in ${ALL_SRRS}; do \
+		make all SRR=$$srr; \
+	done
+
 # ----------------- Shell Settings -----------------
 SHELL := bash
 .ONESHELL:
@@ -133,6 +142,34 @@ coverage: ${COVERAGE}
 	@awk 'BEGIN {total=0; n=0; max=0; min=1e9} {total+=$$3; n++; if($$3>max) max=$$3; if($$3<min) min=$$3} END {if(n>0) printf "Avg coverage: %.2f\nMax: %d\nMin: %d\nPositions: %d\n", total/n, max, min, n; else print "No coverage positions";}' ${COVERAGE}
 	@echo "Top 5 highest coverage positions:"
 	@sort -k3,3nr ${COVERAGE} | head -n5
+
+# ----------------- Count Matrix Generation -----------------
+COUNTS := res/counts.csv
+
+counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
+	mkdir -p res
+	featureCounts -a refs/${NAME}.gff -o ${COUNTS} -T ${THREADS} ${BAM_DIR}/*.bam
+	@echo "Count matrix generated: ${COUNTS}"
+
+# ----------------- PCA Plots -----------------
+PCA_BY_GROUP := res/pca_by_group.pdf
+PCA_BY_CELLTYPE := res/pca_by_celltype.pdf
+
+pca: ${COUNTS}
+	mkdir -p res
+	Rscript scripts/pca_by_group.R ${COUNTS} ${PCA_BY_GROUP}
+	Rscript scripts/pca_by_celltype.R ${COUNTS} ${PCA_BY_CELLTYPE}
+	@echo "PCA plots created: ${PCA_BY_GROUP} and ${PCA_BY_CELLTYPE}"
+
+# ----------------- Differential Expression with EdgeR -----------------
+EDGER := res/edger.csv
+
+edger: ${COUNTS} design.csv
+	mkdir -p res
+	Rscript scripts/run_edger.R ${COUNTS} design.csv ${EDGER}
+	@echo "Differential expression results: ${EDGER}"
+
+
 
 # ----------------- Clean Workspace -----------------
 clean:
