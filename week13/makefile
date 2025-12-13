@@ -16,14 +16,18 @@ R1 := reads/${SRR}_1.fastq
 R2 := reads/${SRR}_2.fastq
 BAM := ${BAM_DIR}/${SRR}.bam
 
-# ----------------- All Samples Loop -----------------
+# ----------------- Run Full Workflow for All Samples -----------------
 DESIGN := design.csv
-ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -f1)
+ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
 
 all_samples:
 	@for srr in ${ALL_SRRS}; do \
 		make all SRR=$$srr; \
 	done
+	make counts
+	make pca
+	make edger
+
 
 # ----------------- Shell Settings -----------------
 SHELL := bash
