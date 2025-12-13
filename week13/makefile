@@ -1,5 +1,6 @@
 # ----------------- Variable Definitions -----------------
 ACC ?= NC_007793.1
+SRR ?=
 NAME ?= staphylococcus_aureus
 SPOTS ?= 1000
 THREADS ?= 4
@@ -39,7 +40,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig  
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts pca edger
 
 # ----------------- Default Workflow -----------------
 all: fastq fastqc align stats 
