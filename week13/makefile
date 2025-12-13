@@ -8,10 +8,11 @@ BAM_DIR := bam
 BG := coverage/${SRR}.bedgraph
 BIGWIG := coverage/${SRR}.bw
 COVERAGE := coverage/${SRR}.txt
+
+REF := refs/${NAME}.fa
 CHROMSIZES := refs/${NAME}.chrom.sizes
 FAI := ${REF}.fai
 
-REF := refs/${NAME}.fa
 R1 := reads/${SRR}_1.fastq
 R2 := reads/${SRR}_2.fastq
 BAM := ${BAM_DIR}/${SRR}.bam
@@ -152,8 +153,9 @@ COUNTS := res/counts.csv
 
 counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
 	mkdir -p res
-	featureCounts -a refs/${NAME}.gff -g ID -o ${COUNTS} -T ${THREADS} ${BAM_DIR}/*.bam
+	featureCounts -a refs/${NAME}.gff -g locus_tag -o ${COUNTS} -T ${THREADS} ${BAM_DIR}/*.bam
 	@echo "Count matrix generated: ${COUNTS}"
+
 
 # ----------------- PCA Plots -----------------
 PCA_BY_GROUP := res/pca_by_group.pdf
