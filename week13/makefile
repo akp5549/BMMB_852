@@ -152,7 +152,7 @@ COUNTS := res/counts.csv
 
 counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
 	mkdir -p res
-	featureCounts -a refs/${NAME}.gff -o ${COUNTS} -T ${THREADS} ${BAM_DIR}/*.bam
+	featureCounts -a refs/${NAME}.gff -g ID -o ${COUNTS} -T ${THREADS} ${BAM_DIR}/*.bam
 	@echo "Count matrix generated: ${COUNTS}"
 
 # ----------------- PCA Plots -----------------
