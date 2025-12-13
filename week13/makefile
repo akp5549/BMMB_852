@@ -1,5 +1,3 @@
-# Makefile for Ebola genome alignment project
-
 # ----------------- Variable Definitions -----------------
 ACC ?= NC_007793.1
 NAME ?= staphylococcus_aureus
