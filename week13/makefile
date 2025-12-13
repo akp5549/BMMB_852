@@ -38,7 +38,7 @@ usage:
 refs:
 	mkdir -p $(dir ${REF})
 	bio fetch ${ACC} --format fasta > ${REF}
-	bio fetch ${ACC} --format gff > refs/ebola_mayinga_1976.gff
+	bio fetch ${ACC} --format gff > refs/${NAME}.gff
 	# create FASTA index and chrom.sizes needed for bigWig
 	samtools faidx ${REF}
 	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
