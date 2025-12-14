@@ -59,8 +59,22 @@ refs:
 # ----------------- Download FASTQ Reads -----------------
 fastq:
 	mkdir -p $(dir ${R1})
-	# download reads (handles single-end and paired-end SRA runs)
-	fastq-dump -X ${SPOTS} --split-files -O reads ${SRR}
+	if [ -s "${R1}" ] && { [ ! -f "${R2}" ] || [ -s "${R2}" ]; }; then \
+		echo "FASTQ files for ${SRR} already exist, skipping download"; \
+	else \
+		MAX_TRIES=3; i=0; \
+		until [ $$i -ge $$MAX_TRIES ]; do \
+			echo "Downloading ${SRR}, attempt $$((i+1))/${MAX_TRIES}..."; \
+			fastq-dump -X ${SPOTS} --split-files -O reads ${SRR} && break; \
+			i=$$((i+1)); \
+			echo "fastq-dump failed, retrying in 5 seconds..."; \
+			sleep 5; \
+		done; \
+		if [ $$i -ge $$MAX_TRIES ]; then \
+			echo "Error: failed to download ${SRR} after $$MAX_TRIES attempts"; \
+			exit 1; \
+		fi \
+	fi
 	@if [ -f "${R2}" ]; then \
 		seqkit stats ${R1} ${R2}; \
 	else \
