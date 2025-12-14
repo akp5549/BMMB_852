@@ -2,7 +2,6 @@
 ACC ?= NC_007793.1
 SRR ?=
 NAME ?= staphylococcus_aureus
-SPOTS ?= 1000
 THREADS ?= 4
 MAX_TRIES ?= 3
 
