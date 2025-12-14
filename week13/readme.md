@@ -16,6 +16,6 @@ bio fetch NC_007793.1 --format gff > refs/staphylococcus_aureus.gff
 ## 5. Make all/ GNU parallel
 ```
 cat design.csv | \
-    parallel --colsep , --header : --eta --lb -j 2 \
-        make SRR={Run} NAME=staphylococcus_aureus THREADS=4 all
+    parallel --colsep '\t' --header : --eta --lb -j 2 \
+        make SRR={run_accession} NAME=staphylococcus_aureus THREADS=4 all
 ```
