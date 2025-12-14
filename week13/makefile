@@ -25,10 +25,15 @@ BAM := ${BAM_DIR}/${SRR}.bam
 ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
 ALL_BAMS := $(patsubst %,${BAM_DIR}/%.bam,${ALL_SRRS})
 
-# Build all BAMs first
+# Pattern rule to make BAMs for a single SRR
+${BAM_DIR}/%.bam:
+	$(MAKE) SRR=$* all
+
+# Build all BAMs first, then generate counts
 all_samples: ${ALL_BAMS}
 	@echo "All BAMs exist. Now generating count matrix..."
 	$(MAKE) counts NAME=${NAME} THREADS=${THREADS}
+
 
 
 # ----------------- Shell Settings -----------------
