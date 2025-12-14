@@ -154,8 +154,12 @@ COUNTS := res/counts.csv
 
 counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
 	mkdir -p res
-	featureCounts -a refs/${NAME}.gff -g locus_tag -o ${COUNTS} -T ${THREADS} ${BAM_DIR}/*.bam
-	@echo "Count matrix generated: ${COUNTS}"
+	featureCounts \
+  	-a refs/${NAME}.gff \
+  	-g ID \
+  	-T ${THREADS} \
+  	-o ${COUNTS} \
+  	${BAM_DIR}/*.bam
 
 
 # ----------------- Clean Workspace -----------------
