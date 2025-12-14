@@ -2,7 +2,7 @@
 ACC ?= NC_007793.1
 SRR ?=
 NAME ?= staphylococcus_aureus
-THREADS ?= 6
+THREADS ?= 8
 MAX_TRIES ?= 2
 SPOTS ?= 1000000  
 DESIGN := design.csv
@@ -59,12 +59,6 @@ refs:
 	samtools faidx ${REF}
 	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
 	seqkit stats ${REF}
-
-# ----------------- Convert GFF to GTF -----------------
-gtf: refs
-	mkdir -p refs
-	gffread refs/${NAME}.gff -T -o refs/${NAME}.gtf
-
 
 
 # ----------------- Download FASTQ Reads -----------------
@@ -179,18 +173,21 @@ coverage: ${COVERAGE}
 
 
 # ----------------- Count Matrix Generation -----------------
-counts: gtf ${ALL_BAMS}
+counts: ${ALL_BAMS}
 	mkdir -p res
 	featureCounts \
-  	-a refs/${NAME}.gtf \
-  	-t gene \
-  	-g gene \
+  	-a refs/${NAME}.gff \
+  	-F GFF \
+  	-t CDS \
+  	-g transcript_id \
   	-T ${THREADS} \
+  	-p \
   	-o res/all_counts.txt \
   	${ALL_BAMS}
 	# Convert to CSV
 	tail -n +3 res/all_counts.txt | cut -f1,7- > res/counts.csv
 	@echo "Count matrix saved to res/counts.csv"
+
 
 
 # ----------------- Clean Workspace -----------------
