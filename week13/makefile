@@ -151,12 +151,12 @@ coverage: ${COVERAGE}
 
 # ----------------- Count Matrix Generation -----------------
 COUNTS := res/counts.csv
-
 counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
 	mkdir -p res
 	featureCounts \
   	-a refs/${NAME}.gff \
-  	-g ID \
+  	-t gene \
+  	-g locus_tag \
   	-T ${THREADS} \
   	-o ${COUNTS} \
   	${BAM_DIR}/*.bam
