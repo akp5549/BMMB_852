@@ -139,14 +139,14 @@ bigwig: align
 $(COVERAGE): ${BAM}
 	mkdir -p coverage
 	@echo "Generating coverage for ${BAM}..."
-	-@samtools depth ${BAM} > ${COVERAGE} || echo "Warning: samtools depth failed for ${BAM}"
+	-@samtools depth ${BAM} > ${COVERAGE} || true
 
 coverage: ${COVERAGE}
 	@echo "Summary stats from ${COVERAGE}:"
-	@if [ -s ${COVERAGE} ]; then \
+	-@if [ -s ${COVERAGE} ]; then \
 		awk 'BEGIN {total=0; n=0; max=0; min=1e9} {total+=$$3; n++; if($$3>max) max=$$3; if($$3<min) min=$$3} END {if(n>0) printf "Avg coverage: %.2f\nMax: %d\nMin: %d\nPositions: %d\n", total/n, max, min, n; else print "No coverage positions";}' ${COVERAGE}; \
 		echo "Top 5 highest coverage positions:"; \
-		sort -k3,3nr ${COVERAGE} | head -n5; \
+		sort -k3,3nr ${COVERAGE} | head -n5 || true; \
 	else \
 		echo "Warning: ${COVERAGE} is empty, skipping stats"; \
 	fi
