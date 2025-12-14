@@ -158,26 +158,6 @@ counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
 	@echo "Count matrix generated: ${COUNTS}"
 
 
-# ----------------- PCA Plots -----------------
-PCA_BY_GROUP := res/pca_by_group.pdf
-PCA_BY_CELLTYPE := res/pca_by_celltype.pdf
-
-pca: ${COUNTS}
-	mkdir -p res
-	Rscript scripts/pca_by_group.R ${COUNTS} ${PCA_BY_GROUP}
-	Rscript scripts/pca_by_celltype.R ${COUNTS} ${PCA_BY_CELLTYPE}
-	@echo "PCA plots created: ${PCA_BY_GROUP} and ${PCA_BY_CELLTYPE}"
-
-# ----------------- Differential Expression with EdgeR -----------------
-EDGER := res/edger.csv
-
-edger: ${COUNTS} design.csv
-	mkdir -p res
-	Rscript scripts/run_edger.R ${COUNTS} design.csv ${EDGER}
-	@echo "Differential expression results: ${EDGER}"
-
-
-
 # ----------------- Clean Workspace -----------------
 clean:
 	rm -rf refs/* reads/* ${BAM_DIR}/* ${COVERAGE} coverage_plot.png bigwig coverage depth* $(BG)*
