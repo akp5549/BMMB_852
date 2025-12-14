@@ -139,12 +139,16 @@ bigwig: align
 $(COVERAGE): ${BAM}
 	mkdir -p coverage
 	samtools depth ${BAM} > ${COVERAGE}
-
 coverage: ${COVERAGE}
 	@echo "Summary stats from ${COVERAGE}:"
-	@awk 'BEGIN {total=0; n=0; max=0; min=1e9} {total+=$$3; n++; if($$3>max) max=$$3; if($$3<min) min=$$3} END {if(n>0) printf "Avg coverage: %.2f\nMax: %d\nMin: %d\nPositions: %d\n", total/n, max, min, n; else print "No coverage positions";}' ${COVERAGE}
-	@echo "Top 5 highest coverage positions:"
-	@sort -k3,3nr ${COVERAGE} | head -n5
+	@if [ -s ${COVERAGE} ]; then \
+		awk 'BEGIN {total=0; n=0; max=0; min=1e9} {total+=$$3; n++; if($$3>max) max=$$3; if($$3<min) min=$$3} END {if(n>0) printf "Avg coverage: %.2f\nMax: %d\nMin: %d\nPositions: %d\n", total/n, max, min, n; else print "No coverage positions";}' ${COVERAGE}; \
+		echo "Top 5 highest coverage positions:"; \
+		sort -k3,3nr ${COVERAGE} | head -n5; \
+	else \
+		echo "Warning: ${COVERAGE} is empty, skipping stats"; \
+	fi
+
 
 # ----------------- Count Matrix Generation -----------------
 COUNTS := res/counts.csv
