@@ -4,6 +4,7 @@ SRR ?=
 NAME ?= staphylococcus_aureus
 THREADS ?= 4
 MAX_TRIES ?= 3
+SPOTS ?= 1000000  
 
 
 BAM_DIR := bam
