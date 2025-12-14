@@ -4,6 +4,8 @@ SRR ?=
 NAME ?= staphylococcus_aureus
 SPOTS ?= 1000
 THREADS ?= 4
+MAX_TRIES ?= 3
+
 
 BAM_DIR := bam
 BG := coverage/${SRR}.bedgraph
@@ -94,18 +96,19 @@ ${REF}.bwt: ${REF}
 index: ${REF}.bwt
 
 # ----------------- align -> BAM + index -----------------
+# align -> BAM + index
 align: fastq ${REF}.bwt
 	mkdir -p ${BAM_DIR}
-	# align, sort, write BAM (handles single-end or paired-end)
-ifneq ("$(wildcard ${R2})","")
-	@echo "Detected paired-end reads: ${R1} ${R2}"
-	@bwa mem -t ${THREADS} ${REF} ${R1} ${R2} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}
-else
-	@echo "Detected single-end reads: ${R1}"
-	@bwa mem -t ${THREADS} ${REF} ${R1} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}
-endif
+	if [ -s "${R2}" ]; then \
+		echo "Detected paired-end reads: ${R1} ${R2}"; \
+		bwa mem -t ${THREADS} ${REF} ${R1} ${R2} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}; \
+	else \
+		echo "Detected single-end reads: ${R1}"; \
+		bwa mem -t ${THREADS} ${REF} ${R1} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}; \
+	fi
 	# index BAM
 	samtools index ${BAM}
+
 
 # ----------------- Simple Alignment Stats -----------------
 stats: ${BAM}
