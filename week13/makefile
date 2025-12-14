@@ -39,10 +39,10 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts pca edger
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts 
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats coverage bigwig
+all: fastq fastqc align stats coverage bigwig all_samples counts
 
 # ----------------- Usage Message -----------------
 usage:
@@ -57,6 +57,12 @@ refs:
 	samtools faidx ${REF}
 	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
 	seqkit stats ${REF}
+
+# ----------------- Convert GFF to GTF -----------------
+gtf: refs/${NAME}.gff
+	mkdir -p refs
+	gffread refs/${NAME}.gff -T -o refs/${NAME}.gtf
+
 
 # ----------------- Download FASTQ Reads -----------------
 fastq:
@@ -170,16 +176,19 @@ coverage: ${COVERAGE}
 
 
 # ----------------- Count Matrix Generation -----------------
-COUNTS := res/counts.csv
-counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
+# ----------------- Count Matrix Generation -----------------
+counts: gtf ${ALL_BAMS}
 	mkdir -p res
 	featureCounts \
-  	-a refs/${NAME}.gff \
+  	-a refs/${NAME}.gtf \
   	-t gene \
-  	-g locus_tag \
+  	-g gene \
   	-T ${THREADS} \
-  	-o ${COUNTS} \
-  	${BAM_DIR}/*.bam
+  	-o res/all_counts.txt \
+  	${ALL_BAMS}
+	# Convert to CSV
+	tail -n +3 res/all_counts.txt | cut -f1,7- > res/counts.csv
+	@echo "Count matrix saved to res/counts.csv"
 
 
 # ----------------- Clean Workspace -----------------
