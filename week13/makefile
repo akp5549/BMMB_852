@@ -23,6 +23,9 @@ BAM := ${BAM_DIR}/${SRR}.bam
 # ----------------- Run Full Workflow for All Samples -----------------
 DESIGN := design.csv
 ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
+# ----------------- All BAMs for Count Matrix -----------------
+ALL_BAMS := $(patsubst %,${BAM_DIR}/%.bam,${ALL_SRRS})
+
 
 all_samples:
 	@for srr in ${ALL_SRRS}; do \
