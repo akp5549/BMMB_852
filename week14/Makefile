@@ -2,8 +2,10 @@
 ACC ?= NC_007793.1
 SRR ?=
 NAME ?= staphylococcus_aureus
-SPOTS ?= 1000
+SPOTS ?= 1000000
 THREADS ?= 4
+COUNTS := res/counts.csv
+
 
 BAM_DIR := bam
 BG := coverage/${SRR}.bedgraph
@@ -150,12 +152,10 @@ coverage: ${COVERAGE}
 	@sort -k3,3nr ${COVERAGE} | head -n5
 
 # ----------------- Count Matrix Generation -----------------
-COUNTS := res/counts.csv
-
-counts: ${BAM_DIR}/*.bam refs/${NAME}.gff
-	mkdir -p res
-	featureCounts -a refs/${NAME}.gff -g locus_tag -o ${COUNTS} -T ${THREADS} ${BAM_DIR}/*.bam
-	@echo "Count matrix generated: ${COUNTS}"
+counts: ${ALL_BAMS} refs/${NAME}.gff
+    mkdir -p res
+    featureCounts -a refs/${NAME}.gff -g locus_tag -o ${COUNTS} -T ${THREADS} ${ALL_BAMS}
+    @echo "Count matrix generated: ${COUNTS}"
 
 
 # ----------------- PCA Plots -----------------
@@ -180,4 +180,5 @@ edger: ${COUNTS} design.csv
 
 # ----------------- Clean Workspace -----------------
 clean:
-	rm -rf refs/* reads/* ${BAM_DIR}/* ${COVERAGE} coverage_plot.png bigwig coverage depth* $(BG)*
+	rm -rf refs/* reads/* ${BAM_DIR}/* ${COVERAGE} coverage_plot.png bigwig coverage depth* $(BG)* res/*
+
