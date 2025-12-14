@@ -5,6 +5,7 @@ NAME ?= staphylococcus_aureus
 THREADS ?= 4
 MAX_TRIES ?= 3
 SPOTS ?= 1000000  
+DESIGN := design.csv
 
 
 BAM_DIR := bam
@@ -20,16 +21,16 @@ R1 := reads/${SRR}_1.fastq
 R2 := reads/${SRR}_2.fastq
 BAM := ${BAM_DIR}/${SRR}.bam
 
-# ----------------- Run Full Workflow for All Samples -----------------
-DESIGN := design.csv
+# ----------------- All Samples -----------------
 ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
-# ----------------- All BAMs for Count Matrix -----------------
 ALL_BAMS := $(patsubst %,${BAM_DIR}/%.bam,${ALL_SRRS})
 
-
-all_samples: $(ALL_BAMS)
+all_samples: ${ALL_BAMS}
 	make counts
 
+# Pattern rule to make BAMs
+${BAM_DIR}/%.bam:
+	$(MAKE) all SRR=$*
 
 # ----------------- Shell Settings -----------------
 SHELL := bash
