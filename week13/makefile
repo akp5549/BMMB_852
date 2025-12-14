@@ -2,8 +2,8 @@
 ACC ?= NC_007793.1
 SRR ?=
 NAME ?= staphylococcus_aureus
-THREADS ?= 4
-MAX_TRIES ?= 3
+THREADS ?= 6
+MAX_TRIES ?= 2
 SPOTS ?= 1000000  
 DESIGN := design.csv
 
@@ -54,7 +54,7 @@ usage:
 refs:
 	mkdir -p $(dir ${REF})
 	bio fetch ${ACC} --format fasta > ${REF}
-	bio fetch ${ACC} --format gff > refs/${NAME}.gff
+	bio fetch GCF_000013465.1 --format gff > refs/${NAME}.gff
 	# create FASTA index and chrom.sizes needed for bigWig
 	samtools faidx ${REF}
 	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
@@ -178,7 +178,6 @@ coverage: ${COVERAGE}
 	fi
 
 
-# ----------------- Count Matrix Generation -----------------
 # ----------------- Count Matrix Generation -----------------
 counts: gtf ${ALL_BAMS}
 	mkdir -p res
