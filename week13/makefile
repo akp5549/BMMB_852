@@ -139,7 +139,7 @@ bigwig: align
 $(COVERAGE): ${BAM}
 	mkdir -p coverage
 	@echo "Generating coverage for ${BAM}..."
-	-@samtools depth ${BAM} > ${COVERAGE}
+	-@samtools depth ${BAM} > ${COVERAGE} || echo "Warning: samtools depth failed for ${BAM}"
 
 coverage: ${COVERAGE}
 	@echo "Summary stats from ${COVERAGE}:"
