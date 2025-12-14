@@ -13,9 +13,7 @@ bio fetch NC_007793.1 --format gff > refs/staphylococcus_aureus.gff
 ```
 ## 4.Makefile
 
-## 5. Make all/ GNU parallel
+## 5. Make all
 ```
-cat design.csv | \
-    parallel --colsep '\t' --header : --eta --lb -j 2 \
-        make SRR={run_accession} NAME=staphylococcus_aureus THREADS=4 all
+make all_samples NAME=staphylococcus_aureus THREADS=4
 ```
