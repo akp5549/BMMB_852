@@ -27,9 +27,6 @@ all_samples:
 		make all SRR=$$srr; \
 	done
 	make counts
-	make pca
-	make edger
-
 
 # ----------------- Shell Settings -----------------
 SHELL := bash
@@ -43,7 +40,7 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts pca edger
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats 
+all: fastq fastqc align stats coverage bigwig
 
 # ----------------- Usage Message -----------------
 usage:
