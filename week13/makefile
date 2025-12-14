@@ -27,11 +27,9 @@ ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
 ALL_BAMS := $(patsubst %,${BAM_DIR}/%.bam,${ALL_SRRS})
 
 
-all_samples:
-	@for srr in ${ALL_SRRS}; do \
-		make all SRR=$$srr; \
-	done
+all_samples: $(ALL_BAMS)
 	make counts
+
 
 # ----------------- Shell Settings -----------------
 SHELL := bash
@@ -42,7 +40,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig 
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts
 
 # ----------------- Default Workflow -----------------
 all: fastq fastqc align stats coverage bigwig
@@ -62,9 +60,10 @@ refs:
 	seqkit stats ${REF}
 
 # ----------------- Convert GFF to GTF -----------------
-gtf: refs/${NAME}.gff
+gtf: refs
 	mkdir -p refs
 	gffread refs/${NAME}.gff -T -o refs/${NAME}.gtf
+
 
 
 # ----------------- Download FASTQ Reads -----------------
