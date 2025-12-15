@@ -64,3 +64,4 @@ SAUSA300_0014: counts in controls 585, 636, 547 vs treatments 2209, 2449, 2595 â
 
 
 ## 7. RNA-seq, PCA, heatmap, functional enrichment analysis
+### I had to run this separately as an R script in RStudio through PSU roar collab.
