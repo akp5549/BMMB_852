@@ -177,19 +177,19 @@ coverage: ${COVERAGE}
 
 
 # ----------------- Count Matrix Generation -----------------
-counts: ${ALL_BAMS}
+  counts: ${ALL_BAMS}
 	mkdir -p res
 	featureCounts \
-  	-a refs/${NAME}.gff \
-  	-F GFF \
-  	-t CDS \
-  	-g locus_tag \
-  	-T ${THREADS} \
-  	-p \
-  	-o res/all_counts.txt \
-  	${ALL_BAMS}
-	# Convert to CSV
-	tail -n +3 res/all_counts.txt | cut -f1,7- > res/counts.csv
+	  -a refs/${NAME}.gff \
+	  -F GFF \
+	  -t CDS \
+	  -g locus_tag \
+	  -T ${THREADS} \
+	  -o res/all_counts.txt \
+	  ${ALL_BAMS}
+
+	# Convert to true CSV (tabs → commas)
+	tail -n +3 res/all_counts.txt | cut -f1,7- | sed 's/\t/,/g' > res/counts.csv
 	@echo "Count matrix saved to res/counts.csv"
 
 
