@@ -23,5 +23,5 @@ bio fetch NC_007793.1 --format gff > refs/staphylococcus_aureus.gff
 
 ## 5. Make all
 ```
-make all_samples NAME=staphylococcus_aureus THREADS=4
+make all_samples NAME=staphylococcus_aureus THREADS=8
 ```
