@@ -33,8 +33,11 @@ ${BAM_DIR}/%.bam: fastq align
 	@echo "BAM $@ is ready"
 
 # Build all BAMs first, then generate counts
-all_samples: ${ALL_BAMS}
-	@echo "All BAMs exist. Now generating count matrix..."
+all_samples:
+	@for srr in $(ALL_SRRS); do \
+		$(MAKE) SRR=$$srr ${BAM_DIR}/$$srr.bam; \
+	done
+	@echo "All BAMs built. Generating counts..."
 	$(MAKE) counts NAME=${NAME} THREADS=${THREADS}
 
 
