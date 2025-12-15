@@ -183,7 +183,7 @@ counts: ${ALL_BAMS}
   	-a refs/${NAME}.gff \
   	-F GFF \
   	-t CDS \
-  	-g transcript_id \
+  	-g locus_tag \
   	-T ${THREADS} \
   	-p \
   	-o res/all_counts.txt \
@@ -191,6 +191,7 @@ counts: ${ALL_BAMS}
 	# Convert to CSV
 	tail -n +3 res/all_counts.txt | cut -f1,7- > res/counts.csv
 	@echo "Count matrix saved to res/counts.csv"
+
 
 
 
