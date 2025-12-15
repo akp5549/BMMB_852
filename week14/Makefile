@@ -7,6 +7,7 @@ THREADS ?= 8
 MAX_TRIES ?= 2
 SPOTS ?= 1000000  
 DESIGN := design.csv
+COUNTS := res/counts.csv
 
 
 BAM_DIR := bam
@@ -49,7 +50,7 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats coverage bigwig
+all: fastq fastqc align stats coverage bigwig counts pca edger
 
 # ----------------- Usage Message -----------------
 usage:
@@ -212,8 +213,26 @@ counts: ${ALL_BAMS} ${GFF}
  	 ${ALL_BAMS}
 
 	# Convert to CSV with gene IDs and SRR/sample names
-	rm -f res/counts.csv
-	awk 'NR==1{gsub("\t",","); print; next} NR>2{gsub("\t",","); print}' res/all_counts.txt > res/counts.csv
+	awk 'NR==1{print "GeneID,Chromosome,Start,End,Strand,Length," ENVIRON["ALL_SRRS"]; next} NR>2{gsub("\t",","); print}' res/all_counts.txt > ${COUNTS}
+
+# ----------------- PCA Plots -----------------
+PCA_BY_GROUP := res/pca_by_group.pdf
+PCA_BY_CELLTYPE := res/pca_by_celltype.pdf
+
+pca: ${COUNTS}
+	mkdir -p res
+	Rscript scripts/pca_by_group.R ${COUNTS} ${PCA_BY_GROUP}
+	Rscript scripts/pca_by_celltype.R ${COUNTS} ${PCA_BY_CELLTYPE}
+	@echo "PCA plots created: ${PCA_BY_GROUP} and ${PCA_BY_CELLTYPE}"
+
+
+# ----------------- Differential Expression with EdgeR -----------------
+EDGER := res/edger.csv
+
+edger: ${COUNTS} ${DESIGN}
+	mkdir -p res
+	Rscript scripts/run_edger.R ${COUNTS} ${DESIGN} ${EDGER}
+	@echo "Differential expression results: ${EDGER}"
 
 
 # ----------------- Clean Workspace -----------------
