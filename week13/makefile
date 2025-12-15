@@ -212,8 +212,9 @@ counts: ${ALL_BAMS} ${GFF}
  	 ${ALL_BAMS}
 
 	# Convert to CSV with gene IDs and SRR/sample names
+	rm -f res/counts.csv
 	awk 'NR==1{gsub("\t",","); print; next} NR>2{gsub("\t",","); print}' res/all_counts.txt > res/counts.csv
-	@echo "Count matrix saved to res/counts.csv with sample names"
+
 
 
 
