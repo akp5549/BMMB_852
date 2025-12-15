@@ -29,8 +29,8 @@ ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
 ALL_BAMS := $(patsubst %,${BAM_DIR}/%.bam,${ALL_SRRS})
 
 # Pattern rule to make BAMs for a single SRR
-${BAM_DIR}/%.bam:
-	$(MAKE) SRR=$* all
+${BAM_DIR}/%.bam: fastq align
+	@echo "BAM $@ is ready"
 
 # Build all BAMs first, then generate counts
 all_samples: ${ALL_BAMS}
@@ -221,9 +221,13 @@ PCA_BY_CELLTYPE := res/pca_by_celltype.pdf
 
 pca: ${COUNTS}
 	mkdir -p res
-	Rscript scripts/pca_by_group.R ${COUNTS} ${PCA_BY_GROUP}
-	Rscript scripts/pca_by_celltype.R ${COUNTS} ${PCA_BY_CELLTYPE}
-	@echo "PCA plots created: ${PCA_BY_GROUP} and ${PCA_BY_CELLTYPE}"
+	if [ -f scripts/pca_by_group.R ] && [ -f scripts/pca_by_celltype.R ]; then \
+		Rscript scripts/pca_by_group.R ${COUNTS} ${PCA_BY_GROUP}; \
+		Rscript scripts/pca_by_celltype.R ${COUNTS} ${PCA_BY_CELLTYPE}; \
+		echo "PCA plots created: ${PCA_BY_GROUP} and ${PCA_BY_CELLTYPE}"; \
+	else \
+		echo "Skipping PCA: R scripts not found"; \
+	fi
 
 
 # ----------------- Differential Expression with EdgeR -----------------
