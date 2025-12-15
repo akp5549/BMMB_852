@@ -55,20 +55,35 @@ all: fastq fastqc align stats coverage bigwig
 usage:
 	@echo "Usage: make [all|refs|fastq|index|align|stats|coverage|bigwig|clean] SRR=<SRR> NAME=<name> ACC=<acc>"
 
-# ----------------- Download Reference Genome -----------------
+# ----------------- Download Reference Genome & Annotations -----------------
+REF := refs/${GCF}.fa
+GFF := refs/${GCF}.gff
+FAI := ${REF}.fai
+CHROMSIZES := refs/${GCF}.chrom.sizes
+
+refs: ${REF} ${GFF} ${FAI} ${CHROMSIZES}
+
+# Fetch FASTA
 ${REF}:
 	mkdir -p refs
-	bio fetch ${ACC} --format fasta > ${REF}
-	samtools faidx ${REF}
-	cut -f1,2 ${FAI} > ${CHROMSIZES}
-	seqkit stats ${REF}
+	@echo "Fetching reference genome ${GCF}..."
+	bio fetch ${GCF} --format fasta > ${REF}
 
+# Fetch GFF
 ${GFF}:
 	mkdir -p refs
+	@echo "Fetching annotation for ${GCF}..."
 	bio fetch ${GCF} --format gff > ${GFF}
 
-refs: ${REF} ${GFF}
+# Index FASTA
+${FAI}: ${REF}
+	@echo "Indexing reference genome..."
+	samtools faidx ${REF}
 
+# Generate chrom.sizes
+${CHROMSIZES}: ${FAI}
+	@echo "Generating chromosome sizes..."
+	cut -f1,2 ${FAI} > ${CHROMSIZES}
 
 
 # ----------------- Download FASTQ Reads -----------------
