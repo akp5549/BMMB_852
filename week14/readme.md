@@ -64,4 +64,172 @@ SAUSA300_0014: counts in controls 585, 636, 547 vs treatments 2209, 2449, 2595 â
 
 
 ## 7. RNA-seq, PCA, heatmap, functional enrichment analysis
-### I had to run this separately as an R script in RStudio through PSU roar collab.
+### I had to run this separately as an R script in RStudio through PSU roar collab:
+```
+#!/usr/bin/env Rscript
+
+# ==========================================
+# RNA-seq downstream analysis (class-style)
+# PCA, Heatmap, Functional Enrichment
+# ==========================================
+
+# -----------------------------
+# Load/install required packages
+# -----------------------------
+packages <- c("ggplot2", "pheatmap", "matrixStats", "gprofiler2", "enrichR")
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg, repos = "https://cloud.r-project.org")
+  }
+  library(pkg, character.only = TRUE)
+}
+
+# -----------------------------
+# File paths (interactive use)
+# -----------------------------
+counts_file <- "counts.csv"     # your counts matrix
+design_file <- "design.csv"     # your design file
+outdir <- "rna_seq"             # output folder
+
+dir.create(outdir, showWarnings = FALSE)
+
+cat("# RNA-seq analysis\n")
+cat("Counts file:", counts_file, "\n")
+cat("Design file:", design_file, "\n")
+cat("Output directory:", outdir, "\n\n")
+
+# -----------------------------
+# Load design
+# -----------------------------
+design <- read.csv(design_file, stringsAsFactors = TRUE)
+design$sample <- as.character(design$run_accession)  # matches counts columns
+design$group  <- as.factor(design$Group)             # condition/group
+design <- design[design$sample %in% colnames(counts), ]
+rownames(design) <- design$sample
+
+# -----------------------------
+# Load counts
+# -----------------------------
+counts_raw <- read.csv(counts_file, sep=",", check.names = FALSE)
+samples <- colnames(counts_raw)[7:ncol(counts_raw)]  # columns 7 onward are samples
+counts <- as.matrix(counts_raw[, samples])
+rownames(counts) <- counts_raw$GeneID
+mode(counts) <- "integer"
+
+# Subset design to only samples present in counts
+design <- design[design$sample %in% colnames(counts), ]
+
+# After loading counts and converting to integer
+counts_log <- log2(counts + 1)   # <--- add this line
+
+
+# -----------------------------
+# Continue with log-transform, PCA, heatmap, enrichment...
+
+
+# =============================
+# Filter low-variance genes
+# =============================
+gene_vars <- rowVars(counts_log)
+keep_genes <- gene_vars > 1e-6  # small number instead of 0
+counts_log_filtered <- counts_log[keep_genes, ]
+
+# Filter zero-variance columns (samples)
+sample_vars <- apply(counts_log_filtered, 2, var)
+counts_log_filtered <- counts_log_filtered[, sample_vars > 0]
+
+if(ncol(counts_log_filtered) < 2){
+  stop("Not enough variable samples for PCA. Need at least 2 samples with variance > 0.")
+}
+
+if(nrow(counts_log_filtered) == 0){
+  stop("No genes with variance > 0. Cannot perform PCA or heatmap.")
+}
+
+
+
+# =============================
+# PCA Plot
+# =============================
+cat("\n# Generating PCA plot\n")
+pca <- prcomp(t(counts_log_filtered), scale. = TRUE)
+pca_df <- data.frame(
+  PC1 = pca$x[,1],
+  PC2 = pca$x[,2],
+  group = design$group,
+  sample = rownames(pca$x)
+)
+var_explained <- round(100 * (pca$sdev^2 / sum(pca$sdev^2)))
+
+pca_pdf <- file.path(outdir, "pca.pdf")
+pdf(pca_pdf, width = 7, height = 6)
+ggplot(pca_df, aes(PC1, PC2, color=group, label=sample)) +
+  geom_point(size=4) +
+  geom_text(vjust=1.4, size=3) +
+  xlab(paste0("PC1 (", var_explained[1], "% variance)")) +
+  ylab(paste0("PC2 (", var_explained[2], "% variance)")) +
+  theme_minimal() +
+  ggtitle("PCA of RNA-seq samples")
+dev.off()
+cat("PCA plot saved to:", pca_pdf, "\n")
+
+# =============================
+# Heatmap (top 50 most variable genes)
+# =============================
+cat("\n# Generating heatmap\n")
+vars <- rowVars(counts_log_filtered)
+top_genes_idx <- order(vars, decreasing = TRUE)[1:min(50, length(vars))]
+mat_top <- counts_log_filtered[top_genes_idx, ]
+
+# Correct annotation
+annotation_col <- data.frame(Group = design$group)
+rownames(annotation_col) <- design$sample  # <-- MUST match columns of mat_top
+
+pheatmap(
+  mat_top,
+  scale = "row",
+  annotation_col = annotation_col,
+  show_rownames = TRUE,
+  show_colnames = TRUE,
+  fontsize_row = 6,
+  fontsize_col = 10,
+  color = colorRampPalette(c("green", "black", "red"))(100),
+  main = "Top Variable Genes"
+)
+
+# =============================
+# Top 100 variable genes for enrichment
+# =============================
+cat("\n# Selecting top 100 most variable genes for enrichment\n")
+top_genes <- rownames(counts)[order(vars, decreasing = TRUE)][1:100]
+top_genes_csv <- file.path(outdir, "top_genes.csv")
+write.csv(top_genes, top_genes_csv, row.names = FALSE, quote = FALSE)
+cat("Top genes saved to:", top_genes_csv, "\n")
+
+# =============================
+# Functional enrichment: g:Profiler
+# =============================
+cat("\n# Running g:Profiler enrichment\n")
+gp <- gprofiler2::gost(top_genes, organism = "hsapiens")
+gp_csv <- file.path(outdir, "gprofiler.csv")
+write.csv(gp$result, gp_csv, row.names = FALSE)
+cat("g:Profiler results saved to:", gp_csv, "\n")
+
+# =============================
+# Functional enrichment: Enrichr
+# =============================
+cat("\n# Running Enrichr enrichment\n")
+dbs <- c("GO_Biological_Process_2021", "KEGG_2021_Human")
+enrich_results <- enrichr(top_genes, dbs)
+
+for(db in dbs){
+  enrich_csv <- file.path(outdir, paste0("enrichr_", db, ".csv"))
+  write.csv(enrich_results[[db]], enrich_csv, row.names = FALSE)
+  cat("Enrichr results for", db, "saved to:", enrich_csv, "\n")
+}
+
+cat("\n# RNA-seq analysis complete.\n")
+
+```
+
+## Which produced the following heatmaps, PCA plot, gprofiler, and top genes:
