@@ -223,25 +223,30 @@ HEATMAP_PDF := ${RNA_DIR}/heatmap.pdf
 DE_RESULTS := ${RNA_DIR}/edger.csv
 GPROFILER_CSV := ${RNA_DIR}/gprofiler.csv
 ENRICHR_CSV := ${RNA_DIR}/enrichr.csv
+TOP_COUNTS_CSV := counts.csv   # optional top-level copy
 
 # Ensure RNA-Seq output folder exists
 ${RNA_DIR}:
 	mkdir -p ${RNA_DIR}
 
+# Make a top-level counts.csv from res/counts.csv
+${TOP_COUNTS_CSV}: res/counts.csv
+	cp res/counts.csv ${TOP_COUNTS_CSV}
+
 # ----------------- PCA Plot -----------------
-pca: counts.csv ${RNA_DIR}
+pca: ${TOP_COUNTS_CSV} ${RNA_DIR}
 	@echo "Generating PCA plot..."
-	Rscript src/r/plot_pca.r -c counts.csv -d design.csv -o ${PCA_PDF}
+	Rscript src/r/plot_pca.r -c ${TOP_COUNTS_CSV} -d design.csv -o ${PCA_PDF}
 
 # ----------------- Heatmap -----------------
-heatmap: counts.csv ${RNA_DIR}
+heatmap: ${TOP_COUNTS_CSV} ${RNA_DIR}
 	@echo "Generating heatmap..."
-	Rscript src/r/plot_heatmap.r -c counts.csv -d design.csv -o ${HEATMAP_PDF}
+	Rscript src/r/plot_heatmap.r -c ${TOP_COUNTS_CSV} -d design.csv -o ${HEATMAP_PDF}
 
 # ----------------- Differential Expression -----------------
-de: counts.csv ${RNA_DIR}
+de: ${TOP_COUNTS_CSV} ${RNA_DIR}
 	@echo "Running differential expression analysis..."
-	Rscript src/r/edger.r -c counts.csv -d design.csv -o ${DE_RESULTS}
+	Rscript src/r/edger.r -c ${TOP_COUNTS_CSV} -d design.csv -o ${DE_RESULTS}
 
 # ----------------- Functional Enrichment -----------------
 gprofiler: ${DE_RESULTS} ${RNA_DIR}
