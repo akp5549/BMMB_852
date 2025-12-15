@@ -1,10 +1,12 @@
 # ----------------- Variable Definitions -----------------
 ACC ?= NC_007793.1
+GCF ?= GCF_000013465.1
 SRR ?=
 NAME ?= staphylococcus_aureus
-SPOTS ?= 1000000
-THREADS ?= 4
-COUNTS := res/counts.csv
+THREADS ?= 8
+MAX_TRIES ?= 2
+SPOTS ?= 1000000  
+DESIGN := design.csv
 
 
 BAM_DIR := bam
@@ -12,25 +14,27 @@ BG := coverage/${SRR}.bedgraph
 BIGWIG := coverage/${SRR}.bw
 COVERAGE := coverage/${SRR}.txt
 
-REF := refs/${NAME}.fa
-CHROMSIZES := refs/${NAME}.chrom.sizes
+REF := refs/${GCF}.fa
+GFF := refs/${GCF}.gff
+CHROMSIZES := refs/${GCF}.chrom.sizes
 FAI := ${REF}.fai
 
 R1 := reads/${SRR}_1.fastq
 R2 := reads/${SRR}_2.fastq
 BAM := ${BAM_DIR}/${SRR}.bam
 
-# ----------------- Run Full Workflow for All Samples -----------------
-DESIGN := design.csv
+# ----------------- All Samples -----------------
 ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
+ALL_BAMS := $(patsubst %,${BAM_DIR}/%.bam,${ALL_SRRS})
 
-all_samples:
-	@for srr in ${ALL_SRRS}; do \
-		make all SRR=$$srr; \
-	done
-	make counts
-	make pca
-	make edger
+# Pattern rule to make BAMs for a single SRR
+${BAM_DIR}/%.bam:
+	$(MAKE) SRR=$* all
+
+# Build all BAMs first, then generate counts
+all_samples: ${ALL_BAMS}
+	@echo "All BAMs exist. Now generating count matrix..."
+	$(MAKE) counts NAME=${NAME} THREADS=${THREADS}
 
 
 # ----------------- Shell Settings -----------------
@@ -42,30 +46,66 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts pca edger
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats 
+all: fastq fastqc align stats coverage bigwig
 
 # ----------------- Usage Message -----------------
 usage:
 	@echo "Usage: make [all|refs|fastq|index|align|stats|coverage|bigwig|clean] SRR=<SRR> NAME=<name> ACC=<acc>"
 
-# ----------------- Download Reference Genome -----------------
-refs:
-	mkdir -p $(dir ${REF})
-	bio fetch ${ACC} --format fasta > ${REF}
-	bio fetch ${ACC} --format gff > refs/${NAME}.gff
-	# create FASTA index and chrom.sizes needed for bigWig
+# ----------------- Download Reference Genome & Annotations -----------------
+refs: ${REF} ${GFF} ${FAI} ${CHROMSIZES}
+
+# Fetch FASTA
+${REF}:
+	mkdir -p refs
+	@echo "Fetching reference genome ${GCF}..."
+	bio fetch ${GCF} --format fasta > ${REF}
+
+# Fetch GFF
+${GFF}:
+	mkdir -p refs
+	@echo "Fetching annotation for ${GCF}..."
+	bio fetch ${GCF} --format gff > ${GFF}
+
+# Index FASTA
+${FAI}: ${REF}
+	@echo "Indexing reference genome..."
 	samtools faidx ${REF}
-	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
-	seqkit stats ${REF}
+
+# Generate chrom.sizes
+${CHROMSIZES}: ${FAI}
+	@echo "Generating chromosome sizes..."
+	cut -f1,2 ${FAI} > ${CHROMSIZES}
+
+# Index for BWA
+${REF}.bwt: ${REF}
+	bwa index ${REF}
+
+index: ${REF}.bwt
+
 
 # ----------------- Download FASTQ Reads -----------------
 fastq:
 	mkdir -p $(dir ${R1})
-	# download reads (handles single-end and paired-end SRA runs)
-	fastq-dump -X ${SPOTS} --split-files -O reads ${SRR}
+	if [ -s "${R1}" ] && { [ ! -f "${R2}" ] || [ -s "${R2}" ]; }; then \
+		echo "FASTQ files for ${SRR} already exist, skipping download"; \
+	else \
+		MAX_TRIES=3; i=0; \
+		until [ $$i -ge $$MAX_TRIES ]; do \
+			echo "Downloading ${SRR}, attempt $$((i+1))/${MAX_TRIES}..."; \
+			fastq-dump -X ${SPOTS} --split-files -O reads ${SRR} && break; \
+			i=$$((i+1)); \
+			echo "fastq-dump failed, retrying in 5 seconds..."; \
+			sleep 5; \
+		done; \
+		if [ $$i -ge $$MAX_TRIES ]; then \
+			echo "Error: failed to download ${SRR} after $$MAX_TRIES attempts"; \
+			exit 1; \
+		fi \
+	fi
 	@if [ -f "${R2}" ]; then \
 		seqkit stats ${R1} ${R2}; \
 	else \
@@ -77,26 +117,25 @@ fastqc:
 	fastqc reads/${SRR}_*.fastq -o fastqc_reports
 
 # ----------------- Index Reference Genome -----------------
-${REF}:
-	make refs
 
 ${REF}.bwt: ${REF}
 	bwa index ${REF}
 index: ${REF}.bwt
 
 # ----------------- align -> BAM + index -----------------
-align: fastq ${REF}.bwt
+# align -> BAM + index
+align: fastq ${REF}.bwt refs
 	mkdir -p ${BAM_DIR}
-	# align, sort, write BAM (handles single-end or paired-end)
-ifneq ("$(wildcard ${R2})","")
-	@echo "Detected paired-end reads: ${R1} ${R2}"
-	@bwa mem -t ${THREADS} ${REF} ${R1} ${R2} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}
-else
-	@echo "Detected single-end reads: ${R1}"
-	@bwa mem -t ${THREADS} ${REF} ${R1} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}
-endif
+	if [ -s "${R2}" ]; then \
+		echo "Detected paired-end reads: ${R1} ${R2}"; \
+		bwa mem -t ${THREADS} ${REF} ${R1} ${R2} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}; \
+	else \
+		echo "Detected single-end reads: ${R1}"; \
+		bwa mem -t ${THREADS} ${REF} ${R1} | samtools sort -@ ${THREADS} -T tmp_prefix -o ${BAM}; \
+	fi
 	# index BAM
 	samtools index ${BAM}
+
 
 # ----------------- Simple Alignment Stats -----------------
 stats: ${BAM}
@@ -143,42 +182,40 @@ bigwig: align
 # ----------------- Coverage / Depth -----------------
 $(COVERAGE): ${BAM}
 	mkdir -p coverage
-	samtools depth ${BAM} > ${COVERAGE}
+	@echo "Generating coverage for ${BAM}..."
+	-@samtools depth ${BAM} > ${COVERAGE} || true
 
 coverage: ${COVERAGE}
 	@echo "Summary stats from ${COVERAGE}:"
-	@awk 'BEGIN {total=0; n=0; max=0; min=1e9} {total+=$$3; n++; if($$3>max) max=$$3; if($$3<min) min=$$3} END {if(n>0) printf "Avg coverage: %.2f\nMax: %d\nMin: %d\nPositions: %d\n", total/n, max, min, n; else print "No coverage positions";}' ${COVERAGE}
-	@echo "Top 5 highest coverage positions:"
-	@sort -k3,3nr ${COVERAGE} | head -n5
+	-@if [ -s ${COVERAGE} ]; then \
+		awk 'BEGIN {total=0; n=0; max=0; min=1e9} {total+=$$3; n++; if($$3>max) max=$$3; if($$3<min) min=$$3} END {if(n>0) printf "Avg coverage: %.2f\nMax: %d\nMin: %d\nPositions: %d\n", total/n, max, min, n; else print "No coverage positions";}' ${COVERAGE}; \
+		echo "Top 5 highest coverage positions:"; \
+		sort -k3,3nr ${COVERAGE} | head -n5 || true; \
+	else \
+		echo "Warning: ${COVERAGE} is empty, skipping stats"; \
+	fi
+
 
 # ----------------- Count Matrix Generation -----------------
-counts: ${ALL_BAMS} refs/${NAME}.gff
-    mkdir -p res
-    featureCounts -a refs/${NAME}.gff -g locus_tag -o ${COUNTS} -T ${THREADS} ${ALL_BAMS}
-    @echo "Count matrix generated: ${COUNTS}"
-
-
-# ----------------- PCA Plots -----------------
-PCA_BY_GROUP := res/pca_by_group.pdf
-PCA_BY_CELLTYPE := res/pca_by_celltype.pdf
-
-pca: ${COUNTS}
+counts: ${ALL_BAMS} ${GFF}
 	mkdir -p res
-	Rscript scripts/pca_by_group.R ${COUNTS} ${PCA_BY_GROUP}
-	Rscript scripts/pca_by_celltype.R ${COUNTS} ${PCA_BY_CELLTYPE}
-	@echo "PCA plots created: ${PCA_BY_GROUP} and ${PCA_BY_CELLTYPE}"
+	featureCounts \
+  	-a ${GFF} \
+ 	 -F GFF \
+ 	 -t CDS \
+ 	 -g locus_tag \
+ 	 -p \
+ 	 -B \
+ 	 -C \
+ 	 -T ${THREADS} \
+ 	 -o res/all_counts.txt \
+ 	 ${ALL_BAMS}
 
-
-# ----------------- Differential Expression with EdgeR -----------------
-EDGER := res/edger.csv
-
-edger: ${COUNTS} design.csv
-	mkdir -p res
-	Rscript scripts/run_edger.R ${COUNTS} design.csv ${EDGER}
-	@echo "Differential expression results: ${EDGER}"
+	# Convert to CSV with gene IDs and SRR/sample names
+	rm -f res/counts.csv
+	awk 'NR==1{gsub("\t",","); print; next} NR>2{gsub("\t",","); print}' res/all_counts.txt > res/counts.csv
 
 
 # ----------------- Clean Workspace -----------------
 clean:
-	rm -rf refs/* reads/* ${BAM_DIR}/* ${COVERAGE} coverage_plot.png bigwig coverage depth* $(BG)* res/*
-
+	rm -rf refs/* reads/* ${BAM_DIR}/* ${COVERAGE} coverage_plot.png bigwig coverage depth* $(BG)*
