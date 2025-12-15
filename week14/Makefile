@@ -7,7 +7,6 @@ THREADS ?= 8
 MAX_TRIES ?= 2
 SPOTS ?= 1000000  
 DESIGN := design.csv
-COUNTS := res/counts.csv
 
 
 BAM_DIR := bam
@@ -29,16 +28,14 @@ ALL_SRRS := $(shell tail -n +2 ${DESIGN} | cut -d',' -f1)
 ALL_BAMS := $(patsubst %,${BAM_DIR}/%.bam,${ALL_SRRS})
 
 # Pattern rule to make BAMs for a single SRR
-${BAM_DIR}/%.bam: fastq align
-	@echo "BAM $@ is ready"
+${BAM_DIR}/%.bam:
+	$(MAKE) SRR=$* all
 
 # Build all BAMs first, then generate counts
-all_samples:
-	@for srr in $(ALL_SRRS); do \
-		$(MAKE) SRR=$$srr ${BAM_DIR}/$$srr.bam; \
-	done
-	@echo "All BAMs built. Generating counts..."
+all_samples: ${ALL_BAMS}
+	@echo "All BAMs exist. Now generating count matrix..."
 	$(MAKE) counts NAME=${NAME} THREADS=${THREADS}
+	$(MAKE) rna_seq
 
 
 # ----------------- Shell Settings -----------------
@@ -50,10 +47,10 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # ----------------- Phony Targets -----------------
-.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts
+.PHONY: all usage refs fastq index align stats coverage clean alignment_summary bigwig all_samples counts rna_seq pca heatmap de gprofiler enrichr
 
 # ----------------- Default Workflow -----------------
-all: fastq fastqc align stats coverage bigwig counts pca edger
+all: fastq fastqc align stats coverage bigwig
 
 # ----------------- Usage Message -----------------
 usage:
@@ -216,30 +213,48 @@ counts: ${ALL_BAMS} ${GFF}
  	 ${ALL_BAMS}
 
 	# Convert to CSV with gene IDs and SRR/sample names
-	awk 'NR==1{print "GeneID,Chromosome,Start,End,Strand,Length," ENVIRON["ALL_SRRS"]; next} NR>2{gsub("\t",","); print}' res/all_counts.txt > ${COUNTS}
+	rm -f res/counts.csv
+	awk 'NR==1{gsub("\t",","); print; next} NR>2{gsub("\t",","); print}' res/all_counts.txt > res/counts.csv
 
-# ----------------- PCA Plots -----------------
-PCA_BY_GROUP := res/pca_by_group.pdf
-PCA_BY_CELLTYPE := res/pca_by_celltype.pdf
+# ----------------- RNA-Seq Analysis -----------------
+RNA_DIR := rna_seq
+PCA_PDF := ${RNA_DIR}/pca.pdf
+HEATMAP_PDF := ${RNA_DIR}/heatmap.pdf
+DE_RESULTS := ${RNA_DIR}/edger.csv
+GPROFILER_CSV := ${RNA_DIR}/gprofiler.csv
+ENRICHR_CSV := ${RNA_DIR}/enrichr.csv
 
-pca: ${COUNTS}
-	mkdir -p res
-	if [ -f scripts/pca_by_group.R ] && [ -f scripts/pca_by_celltype.R ]; then \
-		Rscript scripts/pca_by_group.R ${COUNTS} ${PCA_BY_GROUP}; \
-		Rscript scripts/pca_by_celltype.R ${COUNTS} ${PCA_BY_CELLTYPE}; \
-		echo "PCA plots created: ${PCA_BY_GROUP} and ${PCA_BY_CELLTYPE}"; \
-	else \
-		echo "Skipping PCA: R scripts not found"; \
-	fi
+# Ensure RNA-Seq output folder exists
+${RNA_DIR}:
+	mkdir -p ${RNA_DIR}
 
+# ----------------- PCA Plot -----------------
+pca: counts.csv ${RNA_DIR}
+	@echo "Generating PCA plot..."
+	Rscript src/r/plot_pca.r -c counts.csv -d design.csv -o ${PCA_PDF}
 
-# ----------------- Differential Expression with EdgeR -----------------
-EDGER := res/edger.csv
+# ----------------- Heatmap -----------------
+heatmap: counts.csv ${RNA_DIR}
+	@echo "Generating heatmap..."
+	Rscript src/r/plot_heatmap.r -c counts.csv -d design.csv -o ${HEATMAP_PDF}
 
-edger: ${COUNTS} ${DESIGN}
-	mkdir -p res
-	Rscript scripts/run_edger.R ${COUNTS} ${DESIGN} ${EDGER}
-	@echo "Differential expression results: ${EDGER}"
+# ----------------- Differential Expression -----------------
+de: counts.csv ${RNA_DIR}
+	@echo "Running differential expression analysis..."
+	Rscript src/r/edger.r -c counts.csv -d design.csv -o ${DE_RESULTS}
+
+# ----------------- Functional Enrichment -----------------
+gprofiler: ${DE_RESULTS} ${RNA_DIR}
+	@echo "Running g:Profiler enrichment..."
+	bio gprofiler -c ${DE_RESULTS} -o ${GPROFILER_CSV}
+
+enrichr: ${DE_RESULTS} ${RNA_DIR}
+	@echo "Running Enrichr enrichment..."
+	bio enrichr -c ${DE_RESULTS} -o ${ENRICHR_CSV}
+
+# ----------------- Combined RNA-Seq Workflow -----------------
+rna_seq: de pca heatmap gprofiler enrichr
+	@echo "RNA-Seq analysis completed. Outputs in ${RNA_DIR}"
 
 
 # ----------------- Clean Workspace -----------------
