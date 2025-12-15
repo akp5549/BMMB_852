@@ -15,13 +15,10 @@ SRR21835900,NaP2,treatment
 SRR21835901,NaP1,treatment
 ```
 
-## 3. Download the reference genome
-```
-bio fetch NC_007793.1 --format gff > refs/staphylococcus_aureus.gff
-```
-## 4.Makefile
+## 3. Makefile
+### I did this run on this paper: https://www.ncbi.nlm.nih.gov/bioproject/PRJNA887926/ , and created a Makefile to get a count matrix using examples from class and past Makefile scripts as example
 
-## 5. Make all
+## 4. Make all
 ```
 make all_samples NAME=staphylococcus_aureus THREADS=8
 ```
