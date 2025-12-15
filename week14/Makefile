@@ -220,7 +220,6 @@ counts: ${ALL_BAMS} ${GFF}
 RNA_DIR := rna_seq
 PCA_PDF := ${RNA_DIR}/pca.pdf
 HEATMAP_PDF := ${RNA_DIR}/heatmap.pdf
-DE_RESULTS := ${RNA_DIR}/edger.csv
 GPROFILER_CSV := ${RNA_DIR}/gprofiler.csv
 ENRICHR_CSV := ${RNA_DIR}/enrichr.csv
 TOP_COUNTS_CSV := counts.csv   # optional top-level copy
@@ -246,16 +245,25 @@ heatmap: ${TOP_COUNTS_CSV} ${RNA_DIR}
 # ----------------- Differential Expression -----------------
 de: ${TOP_COUNTS_CSV} ${RNA_DIR}
 	@echo "Running differential expression analysis..."
-	Rscript src/r/edger.r -c ${TOP_COUNTS_CSV} -d design.csv -o ${DE_RESULTS}
 
 # ----------------- Functional Enrichment -----------------
-gprofiler: ${DE_RESULTS} ${RNA_DIR}
-	@echo "Running g:Profiler enrichment..."
-	bio gprofiler -c ${DE_RESULTS} -o ${GPROFILER_CSV}
+TOP_GENES := ${RNA_DIR}/top_genes.csv
 
-enrichr: ${DE_RESULTS} ${RNA_DIR}
+# Make top genes list (optional: top 100 most variable genes)
+${TOP_GENES}: ${TOP_COUNTS_CSV}
+	awk -F',' 'NR>1 {print $$1}' ${TOP_COUNTS_CSV} | head -n 100 > ${TOP_GENES}
+
+gprofiler: ${TOP_GENES} ${RNA_DIR}
+	@echo "Running g:Profiler enrichment..."
+	bio gprofiler -c ${TOP_GENES} -o ${GPROFILER_CSV}
+
+enrichr: ${TOP_GENES} ${RNA_DIR}
 	@echo "Running Enrichr enrichment..."
-	bio enrichr -c ${DE_RESULTS} -o ${ENRICHR_CSV}
+	bio enrichr -c ${TOP_GENES} -o ${ENRICHR_CSV}
+
+rna_seq: pca heatmap gprofiler enrichr
+	@echo "RNA-Seq analysis completed. Outputs in ${RNA_DIR}"
+
 
 # ----------------- Combined RNA-Seq Workflow -----------------
 rna_seq: de pca heatmap gprofiler enrichr
