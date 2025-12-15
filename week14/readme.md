@@ -46,7 +46,7 @@ SAUSA300_0017,CP000255.1,22465,23748,+,1284,74,45,54,110,62,48
 SAUSA300_0020,CP000255.1,24952,25653,+,702,147,224,124,140,271,264
 SAUSA300_0021,CP000255.1,25666,27492,+,1827,758,1174,924,844,1035,1234
 ```
-## 6. Disscussion 
+## 6. Discussion:  
 ### Consistently expressed genes
 SAUSA300_0001: counts 487–640 across all six SRRs → stable expression.
 SAUSA300_0012: counts 174–281 → moderate, consistent coverage.
@@ -61,3 +61,6 @@ SAUSA300_0014: counts in controls 585, 636, 547 vs treatments 2209, 2449, 2595 �
 <img width="1916" height="1021" alt="image" src="https://github.com/user-attachments/assets/f7fdb907-556b-47f5-9677-056e82334b37" />
 
 <img width="1918" height="1021" alt="image" src="https://github.com/user-attachments/assets/80d89593-fde4-478a-8f78-bd67848d0368" />
+
+
+## 7. RNA-seq, PCA, heatmap, functional enrichment analysis
