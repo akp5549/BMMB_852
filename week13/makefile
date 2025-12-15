@@ -56,11 +56,6 @@ usage:
 	@echo "Usage: make [all|refs|fastq|index|align|stats|coverage|bigwig|clean] SRR=<SRR> NAME=<name> ACC=<acc>"
 
 # ----------------- Download Reference Genome & Annotations -----------------
-REF := refs/${GCF}.fa
-GFF := refs/${GCF}.gff
-FAI := ${REF}.fai
-CHROMSIZES := refs/${GCF}.chrom.sizes
-
 refs: ${REF} ${GFF} ${FAI} ${CHROMSIZES}
 
 # Fetch FASTA
@@ -84,6 +79,12 @@ ${FAI}: ${REF}
 ${CHROMSIZES}: ${FAI}
 	@echo "Generating chromosome sizes..."
 	cut -f1,2 ${FAI} > ${CHROMSIZES}
+
+# Index for BWA
+${REF}.bwt: ${REF}
+	bwa index ${REF}
+
+index: ${REF}.bwt
 
 
 # ----------------- Download FASTQ Reads -----------------
@@ -116,8 +117,6 @@ fastqc:
 	fastqc reads/${SRR}_*.fastq -o fastqc_reports
 
 # ----------------- Index Reference Genome -----------------
-${REF}:
-	make refs
 
 ${REF}.bwt: ${REF}
 	bwa index ${REF}
