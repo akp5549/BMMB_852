@@ -1,5 +1,6 @@
 # ----------------- Variable Definitions -----------------
 ACC ?= NC_007793.1
+GCF ?= GCF_000013465.1
 SRR ?=
 NAME ?= staphylococcus_aureus
 THREADS ?= 8
@@ -13,8 +14,9 @@ BG := coverage/${SRR}.bedgraph
 BIGWIG := coverage/${SRR}.bw
 COVERAGE := coverage/${SRR}.txt
 
-REF := refs/${NAME}.fa
-CHROMSIZES := refs/${NAME}.chrom.sizes
+REF := refs/${GCF}.fa
+GFF := refs/${GCF}.gff
+CHROMSIZES := refs/${GCF}.chrom.sizes
 FAI := ${REF}.fai
 
 R1 := reads/${SRR}_1.fastq
@@ -33,7 +35,6 @@ ${BAM_DIR}/%.bam:
 all_samples: ${ALL_BAMS}
 	@echo "All BAMs exist. Now generating count matrix..."
 	$(MAKE) counts NAME=${NAME} THREADS=${THREADS}
-
 
 
 # ----------------- Shell Settings -----------------
@@ -55,14 +56,19 @@ usage:
 	@echo "Usage: make [all|refs|fastq|index|align|stats|coverage|bigwig|clean] SRR=<SRR> NAME=<name> ACC=<acc>"
 
 # ----------------- Download Reference Genome -----------------
-refs:
-	mkdir -p $(dir ${REF})
+${REF}:
+	mkdir -p refs
 	bio fetch ${ACC} --format fasta > ${REF}
-	bio fetch GCF_000013465.1 --format gff > refs/${NAME}.gff
-	# create FASTA index and chrom.sizes needed for bigWig
 	samtools faidx ${REF}
-	cut -f1,2 ${REF}.fai > ${CHROMSIZES}
+	cut -f1,2 ${FAI} > ${CHROMSIZES}
 	seqkit stats ${REF}
+
+${GFF}:
+	mkdir -p refs
+	bio fetch ${GCF} --format gff > ${GFF}
+
+refs: ${REF} ${GFF}
+
 
 
 # ----------------- Download FASTQ Reads -----------------
@@ -104,7 +110,7 @@ index: ${REF}.bwt
 
 # ----------------- align -> BAM + index -----------------
 # align -> BAM + index
-align: fastq ${REF}.bwt
+align: fastq ${REF}.bwt refs
 	mkdir -p ${BAM_DIR}
 	if [ -s "${R2}" ]; then \
 		echo "Detected paired-end reads: ${R1} ${R2}"; \
@@ -177,19 +183,20 @@ coverage: ${COVERAGE}
 
 
 # ----------------- Count Matrix Generation -----------------
-counts: ${ALL_BAMS}
+counts: ${ALL_BAMS} ${GFF}
 	mkdir -p res
 	featureCounts \
-	  -a refs/${NAME}.gff \
-	  -F GFF \
-	  -t CDS \
-	  -g locus_tag \
-	  -p \
-	  -B \
-	  -C \
-	  -T ${THREADS} \
-	  -o res/all_counts.txt \
-	  ${ALL_BAMS}
+  	-a ${GFF} \
+ 	 -F GFF \
+ 	 -t CDS \
+ 	 -g locus_tag \
+ 	 -p \
+ 	 -B \
+ 	 -C \
+ 	 -T ${THREADS} \
+ 	 -o res/all_counts.txt \
+ 	 ${ALL_BAMS}
+
 	# Convert to true CSV (tabs → commas)
 	tail -n +3 res/all_counts.txt | cut -f1,7- | sed 's/\t/,/g' > res/counts.csv
 	@echo "Count matrix saved to res/counts.csv"
