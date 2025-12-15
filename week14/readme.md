@@ -238,6 +238,7 @@ cat("\n# RNA-seq analysis complete.\n")
 <img width="697" height="600" alt="image" src="https://github.com/user-attachments/assets/282d47a2-2e78-4c46-b9b3-1f0900269f2e" />
 
 ## Top genes:
+```
 SAUSA300_2255
 SAUSA300_1706
 SAUSA300_1702
@@ -338,3 +339,4 @@ SAUSA300_0489
 SAUSA300_0199
 SAUSA300_2407
 SAUSA300_1944
+```
