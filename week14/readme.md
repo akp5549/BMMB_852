@@ -55,3 +55,9 @@ SAUSA300_0012: counts 174–281 → moderate, consistent coverage.
 SAUSA300_0010: counts 2–16 → very low expression.
 Variable-expression / potential differential expression genes
 SAUSA300_0014: counts in controls 585, 636, 547 vs treatments 2209, 2449, 2595 → clear difference between conditions.
+
+<img width="1918" height="1013" alt="image" src="https://github.com/user-attachments/assets/8aff7a94-9bbb-420a-be14-0b0708d9ded1" />
+
+<img width="1916" height="1021" alt="image" src="https://github.com/user-attachments/assets/f7fdb907-556b-47f5-9677-056e82334b37" />
+
+<img width="1918" height="1021" alt="image" src="https://github.com/user-attachments/assets/80d89593-fde4-478a-8f78-bd67848d0368" />
