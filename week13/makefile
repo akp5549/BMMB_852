@@ -211,11 +211,9 @@ counts: ${ALL_BAMS} ${GFF}
  	 -o res/all_counts.txt \
  	 ${ALL_BAMS}
 
-	# Convert to true CSV (tabs → commas)
-	tail -n +3 res/all_counts.txt | cut -f1,7- | sed 's/\t/,/g' > res/counts.csv
-	@echo "Count matrix saved to res/counts.csv"
-
-
+	# Convert to CSV with gene IDs and SRR/sample names
+	awk 'NR==1{gsub("\t",","); print; next} NR>2{gsub("\t",","); print}' res/all_counts.txt > res/counts.csv
+	@echo "Count matrix saved to res/counts.csv with sample names"
 
 
 
