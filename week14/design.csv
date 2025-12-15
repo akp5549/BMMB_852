@@ -1,4 +1,4 @@
-run_accession,sample_alias,group
+run_accession,sample_alias,Group
 SRR21835898,NT1,control
 SRR21835899,NaP3,treatment
 SRR21835896,NT3,control
