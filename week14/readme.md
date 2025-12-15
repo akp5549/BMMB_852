@@ -48,15 +48,10 @@ SAUSA300_0021,CP000255.1,25666,27492,+,1827,758,1174,924,844,1035,1234
 ```
 ## 6. Disscussion 
 ### Consistently expressed genes
-
 SAUSA300_0001: counts 487–640 across all six SRRs → stable expression.
-
 SAUSA300_0012: counts 174–281 → moderate, consistent coverage.
 
-Low-expression genes
-
+### Low-expression genes
 SAUSA300_0010: counts 2–16 → very low expression.
-
 Variable-expression / potential differential expression genes
-
 SAUSA300_0014: counts in controls 585, 636, 547 vs treatments 2209, 2449, 2595 → clear difference between conditions.
