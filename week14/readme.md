@@ -340,3 +340,5 @@ SAUSA300_0199
 SAUSA300_2407
 SAUSA300_1944
 ```
+
+## We can conclude from the heatmap that certain genes such as SAUSA300_1329 SAUSA300_1753 SAUSA300_1629 SAUSA300_2364 SAUSA300_1058, are higher in the control group whiile other genes are expressed more in the treatment group including SAUSA300_0685 SAUSA300_2313 SAUSA300_0274 SAUSA300_2307 SAUSA300_2306. In the PCA plot, we observe close clustering between the treatment samples and 2 of the control samples, though there is a clear outlier with control sample SRR21835896.
